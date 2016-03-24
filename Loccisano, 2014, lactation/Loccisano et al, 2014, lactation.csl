@@ -1,0 +1,453 @@
+PROGRAM
+	!PBPK model for PFOA during lactation
+!initial tissue amounts of chemical taken from gestation model (embryonic week 39/delivery)
+
+!milk production rate (L/h--775 mL/day)
+ !milk production rate = milk suckling rate
+ TABLE kMilkC ,1,10/0,30,60,90,120,150,180,270,360,450,0.0,0.028,0.0315,0.0326,0.03375,0.0335,0.0373,0.0269,0.0187,0.0187/  !L/hr; Dewey, et al 1983
+
+ !Decrease in Volume of Fat (as fraction of BW) from pregnancy (data from Wosje, et al 2004)
+  TABLE DVFatC,1,8/0.0,2,12,24,36,48,60,72,0.30,0.295,0.295,0.285,0.285,0.285,0.260,0.240/
+ 
+!maternal BW
+   TABLE DVBW,1,7/0,2,12,24,36,48,60,72,68,66.6,65.7,65.7,65.7,65.7/
+
+   !Increase in Volume of Mammary Tissue (kg)
+   !(calculated as increase in tissue volume from post-pregnant values
+   !to a peak at two weeks post-partum)
+   !(0.01412 was the number calculated that would give a 3.2778 increase
+   !in mammary tissue volume over pre-pregnant values -- 3.2778 is
+   !fraction increase from 360 g pre-pregnant in ICRP to 1180 g (mean
+   !of 560 to 1800 g) during lactation in ICRP)
+    TABLE DVMam, 1,3/0.0,14,168,0.005929,0.01412,0.01412/
+
+   !maternal GFR 
+   TABLE DQFil,1,11/0,1,2,3,4,5,6,7,8,9,10,7.7,7.5,7,6.8,6.5,6.2,6,6,6,6,6/
+
+   !maternal plasma volume (from normal PVE)
+   TABLE DVPlas,1,11/0,1,2,3,4,5,6,7,8,9,10,3.2,3.1,3,2.8,2.6,2.5,2.4,2.4,2.4,2.4,2.4/
+
+   !maternal plasma volume as fraction of BW (normal PVE
+   TABLE DVPlasC,1,11/0,1,2,3,4,5,6,7,8,9,10,0.0457,0.0449,0.0441,0.0418,0.0388,0.0375,0.0365,0.0365,0.0365,0.0365,0.0365/
+
+  
+   !increasing BW of infant
+   TABLE DBWKid,1,22/0,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5,11.5,12.5,13.5,14.5,15.5,16.5,17.5,18.5,19.5,20.5,3.53,4 & 
+         ,4.88,5.67,6.39,7.04,7.63,8.16,8.64,9.08,9.48,9.84,10.16,10.46,10.73,10.98,11.21,11.42,11.62,11.8,11.98,12.14/
+
+INITIAL
+
+   constant frac = 0.0     !for sensitivity analysis
+		
+   !Physiological parameters (Brown, 1997)
+   !blood flows
+   constant QCC =  20.0      		       !Cardiac blood output (L/h/kg^0.75); Gentry et al 2003
+   constant QFatC = 0.052		       !Fraction cardiac output going to fat
+   constant QMamC = 0.0248                            !fraction to mammary tissue (nonpregnant) 
+   constant QLivC = 0.25		                      !Fraction cardiac output going to liver
+   constant QKidC = 0.175		       !Fraction cardiac output going to kidney
+   constant QSkC = 0.058		                      !Fraction cardiac output going to skin
+   constant QGutC = 0.181		       !Fraction cardiac output going to gut
+
+   constant BWinit = 67.7                                   !prepregnancy BW
+   constant Htc = 0.38                                         !hematocrit
+   
+
+   !tissue volumes
+   constant VLivC = 0.026		  !Fraction liver volume
+   constant VKidC = 0.004		  !Fraction kidney volume
+   constant VfilC = 0.0004	                 !Fraction filtrate compartment volume (10% of kidney volume)
+   constant VGutC = 0.0171		  !Fraction gut volume
+   constant VMamC = 0.0062                        !fraction mammary tissue
+   constant VMilk = 0.25                                !residual milk volume (L)
+   !constant VMilkC = 0.008                          !fractional residual milk volume 
+   
+   !PFOA-specific parameters
+   !tissue:plasma partition coefficients (from rat)
+   constant PLiv = 2.2			  !Liver/blood partition coefficient
+   constant PFat = 0.04		                 !Fat/blood partition coefficient
+   constant PKid = 1.05			  !Kidney/blood partition coefficient
+   constant PSk = 0.1			  !Skin/blood partition coefficient
+   constant PR = 0.12			  !Rest of the body/blood partition coefficient
+   constant PGut = 0.05                                  !Gut/blood partition coeff. 
+   constant PMilkP = 0.038                            !milk:plasma partition coeff. 
+   
+
+   !free fraction of chemical in tissues
+   FreeFat = Free/PFat                        !fat
+   FreeMilk = Free/PMilkP                 !milk  
+   FreeG = Free/PGut                         !gut
+   FreeL = Free/PLiv                            !liver
+   FreeK = Free/PKid                          !kidney
+   FreeSk = Free/PSk                          !skin
+   FreeR = Free/PR                             !rest of body
+
+ 
+   constant Tmc = 10                           !resorption maximum (ug/h/kg^0.75); from monkey model
+   constant Kt = 0.055		     !affinity constant; from monkey model
+   constant Free = 0.02		     !Free fraction of PFOA in plasma
+
+   constant kurinec = 0.1	                    !urinary elimination rate (1/h)
+
+   !infant
+   constant FreeI = 0.02                     !free fraction of PFOA in fetal plasma (same as mom)
+   
+   !simulation parameters
+   constant Tstop = 18000               !simulation time in hours
+                                 !2000 days = 5.5 years
+                                 !180 days = 6 months (4320 hours)
+                                 !18000 hours = 23 months
+   
+  
+ !initial tissue amounts of chemical
+Constant APLAS0 = 0.1389
+Constant AG0 = 0.1240
+Constant AL0 = 8.2977
+Constant AFAT0 = 1.7402
+Constant AK0 = 0.7082
+Constant AFIL0 = 1.7455e-006
+Constant ADELAY0 = 0.0143
+Constant AMAM0 = 0.2321
+Constant ASK0 = 0.0208
+Constant AURINE0 = 102.9814
+Constant AR0 = 8.8077
+
+!infant
+Constant ARRI0 = 2.1946
+  
+END ! INITIAL
+
+DYNAMIC
+
+ALGORITHM IALG = 2         !stiff integrator
+CINTERVAL CINT = 0.2
+
+  !drinking water
+  constant Drinkconc = 0.0        !conc'n of chemical in drinking H2O (ug/L)
+  constant DrinkRate = 0.0         !drinking H2O rate; mL/kg/day
+
+  !IV dose 
+  constant IVconc1 = 2.39e-04          !ug/kg BW/day; dose increased by 25% for 1st 6 months postpartum
+  constant IVconc2 = 1.91e-04          !dose decreased back to that estimated for pregnancy
+  
+  
+!increased maternal intake during first 6 months of lactation
+  IF (months .LE. 6) then
+  IVconc = IVconc1
+  else
+  IVconc = IVconc2
+  end if   
+
+
+  !dosing parameters
+  tlast = tlast                          !last dose (day); exposure is for lactation and beyond
+  torald = tlast+tinf               !time for next dose (hr)
+  constant tstart = 0.0          !time to start dosing (hr)
+                                                !when set to 0, dosing starts immediately
+
+  constant tzero = 0.0 
+  constant tinf = 24.                             !length of dose (hr)
+  numdose = (torald+24.-tstart)/24  !number of doses; can be used to check if number of doses is correct
+  
+ 
+
+!dosing--drinking water
+Discrete DWint
+  interval c2 = 24.0      !repeat daily
+  if ((t .ge. tstart) .and. (t .le. torald)) cint = 0.2
+  schedule DWon .at. t + tzero
+  !end if
+END
+
+Discrete DWon
+   if (DrinkConc .gt. 0.0) cint = 0.2
+   DWx = DrinkConc
+   schedule DWoff .at. t + tinf
+end
+
+Discrete DWoff
+   DWx = 0.0
+   !cint = cintc
+end
+
+!dosing--iv
+Discrete IVint
+   interval c3 = 24.0!1e9            !dosing interval
+   if (IVR .gt. 0) cint =  0.2
+   schedule IVon .at. t+tstart
+end
+
+Discrete IVon
+    IVx = ivconc
+    schedule IVoff .at. t+tinf
+end
+
+Discrete IVoff
+    IVx = 0.
+End
+
+DERIVATIVE
+
+!drinking water
+PDrink = (((DWx*DrinkRate)/1000)*BW)/tinf    !rate of receiving chemical in drinking H2O; ug/h
+
+!iv dose
+IV = IVx*BW/tinf           !iv dose rate (ug/h)
+IVdose = IVx*BW            !ug
+
+PND = T/24.      !postnatal day
+WK = PND/7.    !weeks
+Months = PND/30.4375
+Year = PND/365. 
+
+PROCEDURAL
+
+!kmilk = kmilkC(PND) !+ frac*kmilkC(PND)    !milk production
+
+kmilk1 = kmilkC(PND)
+
+VMamT = DVMam(PND) !+ frac*DVMam(PND)    !mammary tissue (fractional vol.)
+
+
+QFil = DQFil(WK)    !GFR 
+QFilI = DQFil(0.)      !at start of lactation (week 0)
+
+
+VPlas = DVPlas(WK)     !maternal plasma volume (normal)
+!VPlasS = DVPlasS(WK)   !maternal plasma volume (smaller)
+
+VPlasC = DVPlasC(WK)!+ frac*DVPlasC(WK)   !fractional vol. of maternal plasma
+VplasCI = DVPlasC(0.)  !initial
+
+BW = DVBW(WK) !+ frac*DVBW(WK)          !maternal BW
+BWI = DVBW(0.)         !BW at start of lactation (week 0)
+
+VFatC = DVFatC(WK)  !+ frac*DVFatC(WK)   !maternal fat
+VFatIC = DVFatC(0.)    !initial (start of lactation; end of pregnancy)
+VFatFC = DVFatC(48.)   !final (end of lactation)
+
+
+
+BWKid = DBWKid(Months)!+ frac*DBWKid(months) !weight of kid (AGA)
+!BWKidS = DBWKidS(Months) !weight of kid (SGA)
+
+END
+
+!breast feeding lasts for 6 months
+IF (months .le. 6) then
+kmilk = kmilk1
+else
+kmilk = 0.0
+end if 
+
+
+!maternal blood flows
+QCPre1 = QCC * BWinit**0.75
+QCPre = QCPre1* (1-Htc)                                            !adjusted for plasma flow using hematocrit
+
+
+QCPost = (QCPre * (1 + (QFatC * ((0.4/VFatFC) - 1)) &      
+           + (QMamC * ((0.05/VMamC) - 1))))
+
+      
+QFatI = QFatC * QCPre * (0.4/VFatFC)                          !Value at end of pregnancy (use final fat volume)
+QMamI = QMamC * QCPre *(0.05/VMamC)               !value at end of pregnancy
+
+QLiv = QLivC * QCPre
+QGut = QGutC * QCPre
+QSk = QSkC * QCPre*(Skinarea/SkinTarea)
+
+QKidI = QFilI/0.2    !initial renal plasma flow
+QKid = QFil/0.2      !GFR is %20 of renal plasma flow
+
+
+!Maternal Tissue Volumes (L); liver, kidney, gut, & filtrate should stay fractional volume of pre-!pregnancy BW
+VLiv = VLivC * BWinit                 
+VGut = VGutC * BWinit
+VKid = VKidC * BWinit 
+VFil = VFilC * BWinit
+
+VPlas = VPlasC*BW                                                    !plasma volume
+
+SkinTarea = 9.1*((BW*1000)**0.666)	              !Total area of skin (cm^2)
+constant Skinthickness = 0.1	                            !Skin thickness (cm)
+constant SkinArea = 972                                          !exposed area on skin (cm^2)
+
+VSk = (Skinarea*Skinthickness)/1000	             !Skin volume
+
+
+!scaled resorption maximum (mom)
+Tm = Tmc*(BW**0.75)
+kurine = kurinec*(BW**(-0.25))
+
+
+!Volume of maternal fat (L)
+   VFat = VFatC*BW 
+  VFatI = VFatIC*BW
+  VFatF = VFatFC*BW
+
+!volume of mammary tissue (L)
+  VMamI = (VMamC + 0.05) *BWinit            
+  VMam = (1 + (VMamT/VMamC))*(VMamC * BWinit)   
+
+
+!rest of body tissues
+
+  VR = (0.84*BW)-VLiv-VFat-VMilk-VKid-VFil-VGut-VSk-VPlas-VMam            !rest of body 
+  Vbal = (0.84*BW)-VLiv-VFat-VMilk-VKid-VFil-VGut-Vsk-VPlas-VMam-VR  !balance check--better be 0 
+
+     
+!Increase in human maternal blood flows (L/hr); adjusted for plasma flow
+     QFat = (QFatI * (VFat/VFatI)) 
+
+     QMam = QMamI *(Vmam/VmamI) + frac*QMam
+     !QMam2 = QMamI*(Vmilk/VmilkI)
+
+!Increased human maternal cardiac output (L/hr)
+     QC = QCPost + (QFat - QFatI) + (QMam - QMamI) +(QFil - QFilI)+ (QKid - QKidI)
+     QR = QC - (QLiv+QKid+QFil+QFat+QMam+QSk+QGut)            !rest of body
+     QBal = QC-(QLiv+QKid+QFil+QFat+QMam+QSk+QGut+QR)  !balance check
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Model Equations!!!!!!!!!!!!!!!!!!!
+     
+!mom
+!Fat 
+RFat = QFat*(CA*Free-CFat*FreeFat)		 !Rate of change in fat (ug/h)
+AFat = integ(RFat,AFAT0)		
+CFat = AFat/VFat				 !Concentration in fat (ug/L)
+CVFat = CFat/PFat			               !Concentration leaving fat (ug/L)
+
+
+!milk
+RMilk = QMam*(CA*Free-CMilk*FreeMilk)-kmilk*Cmilk     
+AMilk = integ(RMilk,0.0)
+CMilk = AMilk/VMilk
+
+Rtrans = kMilk * CMilk
+Atrans = integ(Rtrans, 0.0)
+
+!Gut 
+RGut = QGut*(CA*Free-CGut*FreeG)+PDrink
+AGut = integ(RGut,AG0)
+CGut = AGut/VGut					 !Concentration in gut (ug/L)
+CVGut = CGut/PGut					 !Concentration leaving gut (ug/L)
+
+drinktotal = integ(Pdrink,0.0)  !total amount of chemical received in drinking H2O
+
+!Liver 
+RLiv = (QLiv*(CA*Free))+(QGut*CGut*FreeG) - ((QLiv+QGut)*CLiv*FreeL)
+ALiv = integ(RLiv,AL0)		
+CLiv = ALiv/VLiv					       !Concentration in liver (ug/L)
+CVLiv = CLiv/PLiv		                                    !Concentration leaving liver (ug/L)
+
+
+!Kidney 
+RKid = QKid*(CA*Free-CKid*FreeK) + (Tm*Cfil)/(Kt+Cfil)
+AKid = integ(RKid,AK0)
+CKid = AKid/VKid			              !Concentration in kidneys (ug/L)
+CVKid = CKid/PKid 			              !Concentration leaving kidneys (ug/L)
+
+!Filtrate 
+RFil = Qfil*(CA*Free-Cfil) - (Tm*Cfil)/(Kt+Cfil)	  !Rate of change in filtrate compartment (ug/h)
+!RFil = QfilS*(CA*Free-Cfil) - (Tm*Cfil)/(Kt+Cfil)
+AFil = integ(RFil,AFIL0)
+Cfil = Afil/Vfil					 !Concentration in filtrate compartment (ug/L)
+
+!Storage compartment for urine
+Rdelay = Qfil*Cfil-kurine*Adelay	
+!Rdelay = QfilS*Cfil-kurine*Adelay
+Adelay = integ(Rdelay,ADELAY0)
+
+!Urine
+RUrine = kurine*Adelay
+Aurine = integ(Rurine,AURINE0)
+
+!Skin compartment
+RSk = QSk*(CA*Free-CSk*FreeSk)
+ASk = integ(RSk,ASK0)
+CSk = ASk/VSk			                         !Concentration in skin compartment (ug/L)
+CVSk = CSk/PSk			                         !Concentration leaving skin compartment (ug/L) 
+
+!Rest of the body
+RR = QR*(CA*Free-CR*FreeR)
+AR = integ(RR,AR0)                                         
+CR = AR/VR			                         !Concentration in rest of the body (ug/L)
+CVR = CR/PR			                         !Concentration leaving rest of the body (ug/L)
+
+!plasma  
+RPlas = (QFat*CFat*FreeFat)+((QLiv+QGut)*CLiv*FreeL)+(QR*CR*FreeR)+(QSk*CSk*FreeSk)+(QKid*CKid*FreeK) +(QMam*CMilk*FreeMilk)-(QC*CA*Free)+IV
+APlas = integ(RPlas,APLAS0)
+CAFree = APlas/VPlas                                           !free concentration in plasma; ug/L (ng/mL)
+CA = CAFree/Free                                                 !total concentration in plasma; ug/L
+AUCPlas = integ(CA,0.0)
+
+IVR = integ(IV,0.0)        !total IV dose
+
+!!!!!!equations for infant!!!!!!!!!!!!!!!!!
+
+constant Vdc = 0.17
+Vd = Vdc*BWKid
+constant kelimIC = 0.005                        !elimination rate constant
+kelimI = kelimIC*(BWKid**(-0.25))
+
+RRI = Rtrans-kelimI*CRI*FreeI*Vd
+ARRI = integ(RRI, ARRI0)
+CRI = ARRI/Vd
+!CRI = CRI_free/FreeI
+AUCPLASI = integ(CRI, 0.0)
+
+RUrineI = kelimI*CRI*FreeI*Vd
+AUrineI = integ(RurineI,0.0)
+
+!mass balance--better be zero
+!maternal
+!initial
+Atissue0 = APlas0+AG0+AL0+AFAT0+AK0+Afil0+Adelay0+AR0+Ask0
+ALoss0 = Aurine0
+
+ATissue = APlas+AGut+ALiv+AFat+AKid+AFil+Adelay+AR+ASk+AMilk   !tissue mass
+ALoss = Aurine+Atrans                                          !loss
+
+Atissuetotal = Atissue-Atissue0
+ALosstotal = ALoss-ALoss0
+
+Atotalbody = Atissuetotal+ALosstotal
+
+!drinking water
+if (drinktotal .gt. 0.0) then
+mbal = (drinktotal-(Atotalbody))/(drinktotal*100+1.0e-7)
+else
+mbal = 0.0
+end if
+
+!general population 
+if (IVR .gt. 0.0) then 
+ivbal = (IVR-(atotalbody))/(IVR*100+1.0e-7)
+else 
+ivbal = 0.0
+end if
+
+!infant
+AtissueI0 = ARRI0 !+APlasI0
+AtissueI = ARRI !+AplasI
+
+AtissueItotal = AtissueI - AtissueI0
+ALossI = AurineI
+
+DoseI = Atrans
+
+Ibal = (DoseI-(AtissueItotal+ALossI))
+
+TERMT (T .GE. (TSTOP))
+END !derivative
+END ! DYNAMIC
+END ! PROGRAM
+
+
+
+TERMT (T .GE. (TSTOP))
+END !derivative
+END ! DYNAMIC
+END ! PROGRAM
+

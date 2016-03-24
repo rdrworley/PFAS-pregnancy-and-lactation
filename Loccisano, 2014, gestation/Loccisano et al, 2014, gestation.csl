@@ -1,0 +1,479 @@
+PROGRAM
+
+	!PBPK model for PFOA in pregnant human
+!exposure is for entire length of gestation
+!initial tissue amounts of chemical taken from adult human model 
+!at the end of 30 yrs. exposure (steady-state plasma concentrations reached)
+
+!maternal plasma volume as a proportion of BW; data from Salas 2006
+!compiled by Matt Longnecker
+TABLE DVPlasC,1,28/9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36 & 
+                  ,0.0442,0.0445,0.0448,0.0451,0.0454,0.0456,0.0458,0.0460,0.0461,0.0462,0.0463,0.0464,0.0464 & 
+                  ,0.0464,0.0464,0.0463,0.0463,0.0461,0.0460,0.0458,0.0456,0.0454,0.0451,0.0448,0.0445,0.0441 & 
+ ,0.0437,0.0433/
+   
+ !maternal hematocrit; Milman, et al 1999
+ TABLE DHtc,1,9/0,11,16,20,24,28,32,36,40,0.38,0.372,0.356,0.354 & 
+             ,0.349,0.347,0.346,0.354,0.367/
+
+!renal plasma flow (L/h); Sims & Krantz 1958
+TABLE DQK,1,26/0,8,10,11,12,13,15,17,18,19,22,23,24,25,26,27,28,29,31,32,33,34,36,37,38,40,24.42,50.58,45.42,51.36,57.12 & 
+                  ,46.32,44.73,45.36,41.8,46.53,46.08,47.85,43.05,41.16,47.52,43.41,48.57,46.36,36.68,39.44,46.46,44.13,26.7,33.92,35.46,40.26/
+
+!GFR (L/h); combined data from Sims & Krantz, Gibson, Dunlop, and Duvekot (compiled by Matt Longnecker)
+ TABLE DQFil,1,40/0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39 & 
+         ,6.0,6.0,6.0,6.0,6.0,6.03,6.09,6.18,6.32,6.50,6.72,6.97,7.23,7.50,7.76,8.01,8.23,8.43,8.60,8.75,8.86,8.95,9.01 ,9.05,9.06,9.06,9.04,8.99,8.95,8.88,8.81,8.72,8.62,8.52,8.41,8.29,8.16,8.03,7.89,7.75/
+
+!amniotic fluid volume (L); Beall, et al 2007 (one kid)
+TABLE VAFX,1,20/0,8,9,10,11,12,16,18,20,22,24,26,28,30,32,34,36,38,40,42,0.0237,0.0235,0.0234,0.0232,0.0766,0.124,0.195,0.284,0.361,0.646,0.640,0.687,0.770,0.824,0.776,0.817,0.817,0.799,0.530,0.506/
+
+INITIAL
+
+constant frac = 0.0          !for sensitivity analysis
+		
+   !Physiological parameters (Brown, 1997)
+   !blood flows
+   constant QCC = 20.                                !Cardiac blood output (L/h/kg^0.75) 
+   constant QLC = 0.25		           !Fraction cardiac output going to liver
+   constant QSkC = 0.058                         !Fraction cardiac output going to skin
+   constant QGC = 0.181		          !Fraction cardiac output going to gut
+
+   constant BWinit = 67.7                        !maternal BW before pregnancy (Gentry, et al 2003)
+   constant QMamC = 0.027                   !initial fraction of CO going to mammary tissue
+   constant QFatC = 0.052	         !initial fraction cardiac output going to fat
+   constant numfet = 1                            !one kid
+   
+
+   !tissue volumes
+   constant VLC = 0.026		          !Fraction liver volume
+   constant VKC = 0.004		          !Fraction kidney volume
+   constant VfilC = 0.0004	         !Fraction filtrate compartment volume (10% of kidney volume)
+   constant VGC = 0.0171                       !Fraction gut volume
+
+   constant VMamC = 0.0062                !initial fractional volume of mammary tissue
+   constant VFatC = 0.214                      !initial fractional volume of fat
+  
+
+   !PFOA-specific parameters; PFOS parameters are in Table 1 of the manuscript. 
+   !tissue:plasma partition coefficients (from rat)
+   constant PL = 2.2			           !Liver/blood partition coefficient
+   constant PFat = 0.04		                        !Fat/blood partition coefficient
+   constant PK = 1.05			          !Kidney/blood partition coefficient
+   constant PSk = 0.1			          !Skin/blood partition coefficient
+   constant PR = 0.12			         !Rest of the body/blood partition coefficient
+   constant PG = 0.05                                             !Gut/blood partition coeff. 
+   constant PMam = 0.13                                      !mammary:blood partition coeff. (from mouse)
+   constant PPla = 0.28                                          !placenta:blood partition coeff. (from rat)
+ 
+   constant Tmc = 10                              !resorption maximum (ug/h/kg^0.75); from adult human model 
+                                                                  !3.8 yr half-life (Tmc = 10); 2.3 yr half-life (Tmc = 6)
+   constant Kt = 0.055		        !affinity constant; from monkey model
+   constant Free = 0.02		        !Free fraction of PFOA in plasma
+
+   constant kurinec = 0.1	                     !urinary elimination rate constant (1/h)
+
+   !free fraction of chemical in tissues 
+    FreeL = Free/PL                               !liver
+    FreeK = Free/PK                              !kidney
+    FreeR = Free/PR                             !rest of body
+    FreeG = Free/PG                             !gut
+    FreeFat = Free/PFat                       !fat
+    FreeSk = Free/PSk                          !skin
+    FreeMam = Free/PMam               !mammary tissue
+    FreePla = Free/PPla                       !placenta
+
+   !fetus
+   constant PRF = 0.12                      !rest of body:plasma partition coeff. (same as mom)
+   constant FreeF = 0.02                  !free fraction of PFOA in fetal plasma (same as mom)
+   constant HtcF = 0.5                      !fetal hematocrit (same as newborn); Sisson, et al 1959
+   constant VPlasFC = 0.0428         !fractional plasma volume
+  
+   FreeFR = FreeF/PRF                    !free fraction in rest of fetal body
+
+   !placental transfer (PFOA)
+   constant ktrans1c = 0.46                   !mom to fetus (L/hr/kg^0.75)
+   constant ktrans2c = 0.46                   !fetus to mom (L/hr/kg^0.75)
+
+   !amniotic fluid transfer
+   constant ktrans3c = 0.008         !amniotic fluid to fetus
+   constant ktrans4c = 0.001         !fetus to fluid
+
+   !initial tissue amounts of chemical (from adult human model)
+  Constant APLAS0 = 0.0891
+  Constant AG0 = 0.0890
+  Constant AL0 = 5.9530
+  Constant AFat0 = 0.8909
+  Constant AK0 = 0.5243
+  Constant AFIL0 = 1.5397e-006
+  Constant ADELAY0 = 0.0101
+  Constant AMAM0 = 0.0839
+  Constant ASK0 = 0.0145
+  Constant AURINE0 = 77.7295
+  Constant AR0 = 6.5958
+
+   !fetal tissues
+   constant AFPLAS0 = 0.0
+   constant AFTIS0 = 0.0
+   
+!simulation parameters
+  CONSTANT TSTOP = 6552              !simulation time in hours (6552 hours--embryonic week 39/delivery)
+                                     
+  END ! INITIAL
+DYNAMIC
+
+  ALGORITHM IALG = 2
+  CINTERVAL CINT = 0.2                 
+
+  !oral dose
+  constant PDose = 1.2e-04                        !oral dose (ug/kg)
+
+  !drinking water
+  constant Drinkconc = 0.0                 !conc'n of chemical in drinking H2O (ug/L); LH, Ohio = 3.55 ppb
+  constant DrinkRate = 0.0                 !drinking H2O rate; mL/kg/day
+  !drinking water rates for pregnant women from Ershow, et al 
+
+  !IV dose 
+  constant IVconc = 0.0                     !ug/kg BW
+  
+  !dosing parameters
+  tlast = tstop                               !last dose (hours); exposure is for entire lenght of pregnancy
+  !torald = 294*24.+tinf             !time for next dose (hr)
+  torald = tlast + tinf
+  constant tstart = 0.0             !time to start dosing (hr); set to 0.0 for single dose
+                                                   !when set to 0, dosing starts immediately; must be 0 for single dose
+                                                   !set to 24. for multiple
+  constant tzero = 0.0 
+  constant tinf = 24                 !length of dose (hr)
+  numdose = (torald+24.-tstart)/24  !number of doses; can be used to check if number of doses is correct
+  
+
+!dosing--drinking water
+Discrete DWint
+  interval c2 = 24.0      !repeat daily
+  if ((t .ge. tstart) .and. (t .le. torald)) cint = 0.2
+  schedule DWon .at. t + tzero
+  !end if
+END
+
+Discrete DWon
+   if (DrinkConc .gt. 0.0) cint = 0.2
+   DWx = DrinkConc
+   schedule DWoff .at. t + tinf
+end
+
+Discrete DWoff
+   DWx = 0.0
+   !cint = cintc
+end
+
+
+!dosing--iv
+Discrete IVint
+   interval c3 = 24.0!1e9            !dosing interval
+   if (IVR .gt. 0) cint = 0.2
+   schedule IVon .at. t+tstart
+end
+
+Discrete IVon
+    IVx = ivconc
+    schedule IVoff .at. t+tinf
+end
+
+Discrete IVoff
+    IVx = 0.
+End
+
+
+DERIVATIVE
+
+!drinking water
+PDrink = (((DWx*DrinkRate)/1000)*BW)/tinf    !rate of receiving chemical in drinking H2O; ug/h
+
+!iv dose
+IV = IVx*BW/tinf           !iv dose rate (ug/h)
+IVdose = IVx*BW            !ug
+
+ 
+GD = T/24.                   !gestation day
+WK = GD/7.                  !week
+
+PROCEDURAL
+
+VPlasC = DVPlasC(WK)       !maternal plasma volume (as fraction of BW)
+
+Htc = DHtc(WK)                   !maternal hematocrit
+
+QK = DQK(WK)                    !renal plasma flow
+QKi = DQK(0.)                      !initial
+
+QFil_R = DQFil(WK)            !GFR
+QFili = DQFIL(0.)                 !initial
+
+VAF = VAFX(WK)               !amniotic fluid volume
+
+END
+
+
+
+!changing tissue volumes
+!placenta (L) (Gentry, et al & Clewell, et al)
+constant VPlaA = 0.85
+constant VPlaB = -9.434
+constant VPlaC = -5.23e-4
+VPla = (VPlaA*exp(VPlaB*(exp(VPlaC*(GD*24))))) 
+
+!fat (L)
+VFatI = BWinit*VFatC                               !initial fat volume
+VFat = BWInit*(((VFatC+(0.09*exp(-12.90995862* & 
+       (exp(-0.000797*(GD*24))))))))    
+
+!mammary tissue (L)
+VMamI = BWinit*VMamC                       !initial mammary volume
+VMam = BWInit*(((VMamC+(0.0065*exp(-7.444868477* & 
+       (exp(-0.000678*(GD*24))))))))
+
+!fetus (Gentry, et al & Clewell, et al)
+!birthweight at term is ~3.6 kg
+constant VFeA = 3.779
+constant VFeB = -16.081
+constant VFeC = -5.67e-4
+constant VFeD = 3.833
+constant VFeE = -140.178
+constant VFeF = -7.01e-4
+!volume of one kid (kg)
+V1Fet = (VFeA*exp(VFeB*(exp(VFeC*(GD*24)))) & 
+        + VFeD*exp(VFeE*(exp(VFeF*(GD*24)))))
+
+!size of fetus is proportional to maternal GFR
+constant CVFil = 0.15            !coefficient of variation
+SDQFil = CVFil*QFil_R           !SD of QFil; QFil_R is "mean" GFR at different weeks during pregnancy
+constant QFilZ = 0.0              !error term
+QFil = QFil_R+SDQFil*QFilZ
+
+constant CVVFet = 0.15
+SDVFet = CVVFet*V1Fet
+constant VFetZ = 0.0
+constant RHO = 0.2 
+VFet = V1Fet + SDVFet *(RHO*QFilZ & 
+        + VFetZ*(1-RHO**2)**0.5)
+
+ !tissue volumes (liver, gut, kidney, filtrate) assumed to stay constant fraction of pre-pregnancy BW
+ VL = VLC*BWinit 			    !Liver volume 
+ VK = VKC*BWinit			    !Kidney volume 
+ Vfil = VfilC*BWinit	                                !Fitrate compartment volume 
+ VG = VGC*BWinit		                  !Gut volume 
+
+ VPlas = VPlasC*BW                          !plasma volume
+
+ !for dermal exposure
+ SkinTarea = 9.1*((BW*1000)**0.666)	         !Total area of skin (cm^2)
+ constant Skinthickness = 0.1	                       !Skin thickness (cm)
+ constant SkinArea = 972                                    !exposed area on skin (cm^2)
+
+ VSk = (Skinarea*Skinthickness)/1000	        !Skin volume 
+ 
+BW = BWinit+(VFat-VFatI)+(VMam-VMamI)+VPla+VFet+VAF
+
+
+ VR = (0.84*BW)-VL-VK-Vfil-VG-VPlas-VSk-VMam-VFat-VPla-VFet-VAF    !Rest of body
+
+ Vbal = (0.84*BW)-(VL+VK+VFil+VG+Vplas+VSk+VR+VFat+VMam+VPla+VFet+VAF)   !Balance check--better be 0
+
+ !blood flows (L/hr)
+ QCinit = QCC*BWinit**0.75   !initial cardiac output (L/h)
+ QCPinit = QCinit*(1-Htc)        !adjust initial CO for plasma flow (L/h)
+
+ QL = QLC*QCPinit			     !Plasma flow to liver 
+ QG = QGC*QCPinit		                    !Plasma flow to gut 
+ QSk = QSkC*QCPinit*(Skinarea/SkinTarea) !Plasma flow to skin (L/h)
+
+ QFatI = QFatC*QCPinit                      !initial flow to fat
+ QFat = QFatI*(VFat/VFatI)               !changing flow to fat
+
+ QMamI = QMamC*QCPinit                            !intial flow to mammary
+ QMam = QMamI*(VMam/VMamI)               !changing flow to fat
+
+ QPla1 = 58.5*VPla                         !blood flow to placenta (Gentry, et al & Clewell, et al)
+ QPla = QPla1*(1-Htc)                    !adjust for plasma flow
+
+ QC = QCPinit+(QFat-QFatI)+(QMam-QMamI)+ (QK-QKi)+ (QFil-QFilI)+ QPla  !total cardiac output (L/h)
+  
+QR = QC-(QL+QK+QFil+QG+QSk+QFat+QMam+QPla)                  !rest of body
+ Qbal = QC-(QL+QK+QFil+QG+QSk+QR+QFat+QMam+QPla)       !balance check--better be 0
+
+kurine = kurinec*(BW**(-0.25)) !urine elimination from urine storage
+ Tm = Tmc*BW**0.75                  !transporter maximum (scaled as BW**0.75)
+
+ !fetal volumes/blood flows
+ VPlasF = VPlasFC*VFet                          !volume of fetal plasma (L); fractional volume same as adult
+
+ VRF = (0.92*VFet)-VPlasF                     !volume of rest of body (L)
+ VFetBal = (0.92*VFet)-(VRF+VPlasF) !balance check on fetus
+
+!fetal cardiac output (Gentry, et al)
+ constant QFetC = 54.0                      !L/h/kg blood
+ QFet = QFetC*VPlasF*(1-HtcF)       !fetal cardiac output adjusted for plasma flow using fetal hematocrit (L/h)
+
+ QRF = QFet                                !flow to rest of body
+ QFetBal = QFet-QRF                 !balance check
+
+
+!placental & amniotic fluid transfer
+ ktrans1 = ktrans1c*((V1Fet**0.75)*numfet)
+ ktrans2 = ktrans2c*((V1Fet**0.75)*numfet)
+ ktrans3 = ktrans3c*((V1Fet**0.75)*numfet)
+ ktrans4 = ktrans4c*((V1Fet**0.75)*numfet)
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Model Equations!!!!!!!!!!!!!!!!!!!
+     
+!Fat 
+RFat = QFat*(CA*Free-CFat*FreeFat)
+AFat = integ(RFat,AFat0)		
+CFat = AFat/VFat				!Concentration in fat (ug/L)
+CVFat = CFat/PFat			               !Concentration leaving fat (ug/L)
+
+!Mammary 
+RMam = QMam*(CA*Free-CMam*FreeMam)     
+AMam = integ(RMam,AMam0)
+CMam = AMam/VMam
+CVMam = CMam/PMam
+
+!Gut 
+RG = QG*(CA*Free-CG*FreeG)+PDrink
+AG = integ(RG,AG0)
+CG = AG/VG					  !Concentration in gut (ug/L)
+CVG = CG/PG					  !Concentration leaving gut (ug/L)
+
+drinktotal = integ(Pdrink,0.0)  !total amount from drinking water 
+
+!Liver 
+RL = (QL*(CA*Free))+(QG*CG*FreeG) - ((QL+QG)*CL*FreeL)
+AL = integ(RL,AL0)		
+CL = AL/VL					                       !Concentration in liver (ug/L)
+CVL = CL/PL					                       !Concentration leaving liver (ug/L)
+
+
+!Kidney 
+RK = QK*(CA*Free-CK*FreeK) + (Tm*Cfil)/(Kt+Cfil)
+AK = integ(RK,AK0)
+CK = AK/VK					                !Concentration in kidneys (ug/L)
+CVK = CK/PK 					               !Concentration leaving kidneys (ug/L)
+
+!Filtrate 
+RFil = Qfil*(CA*Free-Cfil) - (Tm*Cfil)/(Kt+Cfil)	   !Rate of change in filtrate compartment (ug/h)
+AFil = integ(RFil,Afil0)
+Cfil = Afil/Vfil			                         !Concentration in filtrate compartment (ug/L)
+
+!Storage compartment for urine
+Rdelay = Qfil*Cfil-kurine*Adelay		
+Adelay = integ(Rdelay,Adelay0)
+
+!Urine
+RUrine = kurine*Adelay
+Aurine = integ(Rurine,Aurine0)
+
+!Skin compartment
+RSk = QSk*(CA*Free-CSk*FreeSk)                        !Rate of change in skin(ug/h)
+ASk = integ(RSk,Ask0)
+CSk = ASk/VSk			                         !Concentration in skin compartment (ug/L)
+CVSk = CSk/PSk			                         !Concentration leaving skin compartment (ug/L) 
+
+!Rest of the body
+RR = QR*(CA*Free-CR*FreeR)			!Rate of change in rest of the body (ug/h)
+AR = integ(RR,AR0)                                         
+CR = AR/VR				               !Concentration in rest of the body (ug/L)
+CVR = CR/PR					 !Concentration leaving rest of the body (ug/L)
+
+!plasma  
+RPlas = (QFat*CFat*FreeFat)+((QL+QG)*CL*FreeL)+(QR*CR*FreeR)+(QSk*CSk*FreeSk)+(QK*CK*FreeK) & 
+        +(QMam*CMam*FreeMam)-(QC*CA*Free)+(QPla*CPla*FreePla)+IV
+APlas = integ(RPlas,Aplas0)
+CAFree = APlas/VPlas            !free concentration in plasma; normal PVE
+CA = CAFree/Free                  !total concentration in plasma
+APlastot = CA*VPlas
+AUCPlas = integ(CA,0.0)
+
+IVR = integ(IV,0.0)                 !total IV dose
+
+!placenta
+!RPla = QPla*(CA-CVPla)*Free-rtrans1+rtrans2
+RPla = QPla*(CA*Free-CPla*FreePla)-rtrans1+rtrans2
+APla = integ(RPla,0.0)
+CPla = APla/VPla
+CVPla = CPla/PPla
+
+
+!transfer to fetus
+rtrans1 = ktrans1*CPla*FreePla !+(Vmax*CPla*FreePla)/(Km+CPla*FreePla)
+Atrans1 = integ(rtrans1,0.0)
+rtrans2 = ktrans2*Ca_F*FreeF
+Atrans2 = integ(rtrans2,0.0) 
+
+
+!rest of fetal body
+RRF = QRF*(CA_f*FreeF-CRF*FreeFR)-rtrans3+rtrans4
+ARRF = integ(RRF,0.0)
+CRF = ARRF/(VRF+1.0e-33)
+CVRF = CRF/PRF
+
+!amniotic fluid
+RAmF = rtrans3-rtrans4
+AAmf = integ(RAmf, 0.0)
+CAmf = AAmf/(Vaf+1.0e-7)
+!CAmf2 = AAmf/(Vaf+1.0e-7)/1000   !ug/mL
+
+rtrans3 = ktrans3*Ca_f*FreeF!+kelim*CVTisF*FreeF
+Atrans3 = integ(rtrans3,0.0)
+rtrans4 = ktrans4*CAmF
+Atrans4 = integ(rtrans4,0.0)
+
+!fetal plasma
+RPlasF =(QRF*CRF*FreeFR)-(QFet*CA_f*FreeF)+rtrans1-rtrans2
+APlasF = integ(RPlasF,0.0)
+CA_f_free = APlasF/(VPlasF+1.0e-7)         !free concentration in fetal plasma
+CA_f = CA_f_free/FreeF                              !total concentration in fetal plasma
+APlastotF = CA_f*VPlasF
+AUCPLASF = integ(CA_f,0.0)
+  
+ 
+!mass balance--better be zero
+
+!initial
+Atissue0 = APlas0+AG0+AL0+AFat0+AK0+Afil0+Adelay0+Amam0+AR0+Ask0
+ALoss0 = Aurine0
+
+ATissue = APlas+AG+AL+AFat+AK+AFil+Adelay+AMam+AR+ASk+APla   !tissue mass
+ALoss = Aurine+Atrans1-Atrans2                             !loss
+
+Atissuetotal = Atissue-Atissue0
+ALosstotal = ALoss-ALoss0
+
+Atotalbody = Atissuetotal+ALosstotal
+
+if (drinktotal .gt. 0.0) then
+mbal = (drinktotal-(Atotalbody))/(drinktotal*100+1.0e-7)
+else
+mbal = 0.0
+end if
+
+if (IVR .gt. 0.0) then 
+ivbal = (IVR-(atotalbody))/(IVR*100+1.0e-7)
+else 
+ivbal = 0.0
+end if
+
+
+!fetus
+AtissueF = ARRf+AplasF
+ALossF = Atrans2+Atrans3-Atrans4
+
+DoseF = Atrans1
+
+Fbal = (DoseF-(AtissueF+ALossF))
+
+
+  
+TERMT (T .GE. (TSTOP))
+END !derivative
+END ! DYNAMIC
+END ! PROGRAM
