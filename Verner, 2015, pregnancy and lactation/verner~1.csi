@@ -1,0 +1,248 @@
+program 
+
+
+
+
+
+
+
+
+
+
+
+initial 
+
+
+constant age_delivery = 30 
+constant weight_prepregnancy_m = 70 
+constant birthweight = 3.4 
+constant weight_c = 12.1 
+constant age_weight_c = 2.0 
+constant sex = 0 
+constant total_bf = 0.5 
+constant age_sample_m = 29.8 
+constant compound = 2 
+constant dose_m = 0.001 
+age_conception = age_delivery - 0.769 
+
+
+table table_bw_females , 1 , 10 / 0.0 , 0.5 , 1.0 , 2.0 , 5.0 , 10.0 , 13.0 , 16.0 , 20.0 , 100.0 , 3.4 , 7.2 , 9.5 , 12.1 , 18.0 , 33.0 , 46.0 , 54.0 , 58.0 , 58.0 / 
+# line 31 
+table table_bw_males , 1 , 10 / 0.0 , 0.5 , 1.0 , 2.0 , 5.0 , 10.0 , 13.0 , 16.0 , 20.0 , 100.0 , 3.5 , 7.8 , 10.3 , 12.7 , 18.0 , 32.0 , 46.0 , 61.0 , 71.0 , 71.0 / 
+# line 33 
+table table_fetal_weight , 1 , 7 / 0.0 , 0.217 , 0.353 , 0.463 , 0.551 , 0.639 , 0.768 , 0.0 , 0.0 , 0.26 , 0.69 , 1.25 , 2.02 , 3.28 / 
+# line 35 
+
+
+if ( compound .eq. 1 ) then 
+pfos = 1 
+pfoa = 0 
+pfhxs = 0 
+else if ( compound .eq. 2 ) then 
+pfos = 0 
+pfoa = 1 
+pfhxs = 0 
+pfos = 0 
+pfoa = 0 
+pfhxs = 1 
+endif 
+
+
+constant pfos_vd_bw = 0.230 
+constant pfoa_vd_bw = 0.170 
+constant pfhxs_vd_bw = 0.213 
+vd_bw = pfos * pfos_vd_bw + pfoa * pfoa_vd_bw + pfhxs * pfhxs_vd_bw 
+
+
+constant pfos_pmilk = 0.0138 
+constant pfoa_pmilk = 0.0577 
+constant pfhxs_pmilk = 0.0140 
+pmilk = pfos * pfos_pmilk + pfoa * pfoa_pmilk + pfhxs * pfhxs_pmilk 
+
+
+constant pfos_p_cm = 0.454 
+constant pfoa_p_cm = 0.783 
+constant pfhxs_p_cm = 0.556 
+p_cm = pfos * pfos_p_cm + pfoa * pfoa_p_cm + pfhxs * pfhxs_p_cm 
+
+
+constant pfos_hl = 5.4 
+constant pfoa_hl = 3.8 
+constant pfhxs_hl = 8.5 
+half_life = ( pfos * pfos_hl + pfoa * pfoa_hl + pfhxs * pfhxs_hl ) * 365 * 24 
+
+
+tstop = ( age_delivery + 5.0 ) * 365 * 24 
+end 
+dynamic 
+
+
+algorithm ialg = 2 
+maxterval maxt = 1e+10 
+minterval mint = 1e-10 
+cinterval cint = 24 
+derivative 
+
+
+age_m = t / ( 365 * 24 ) 
+age_c = io_delivery * ( age_m - age_delivery ) 
+ga = io_conception * ( age_m - age_conception ) 
+
+
+# line 92 
+z99999 = table_bw_females ( age_m ) 
+# line 92 
+z99998 = table_bw_females ( age_conception ) 
+# line 92 
+bw_m = ( weight_prepregnancy_m / z99998 ) * z99999 
+
+
+
+adj_bw_c_pre = birthweight / 3.28 
+# line 97 
+z99997 = table_bw_males ( age_weight_c ) 
+# line 97 
+z99996 = table_bw_females ( age_weight_c ) 
+# line 97 
+adj_bw_c_post = weight_c / ( ( 1 - sex ) * z99996 + sex * z99997 ) 
+# line 98 
+adj_bw = ( io_conception - io_delivery ) * adj_bw_c_pre + ( io_delivery - io_weight_c ) * ( adj_bw_c_pre + age_c * ( adj_bw_c_post - adj_bw_c_pre ) / age_weight_c ) + ( io_weight_c ) * adj_bw_c_post 
+# line 101 
+
+# line 102 
+z99995 = table_bw_males ( age_c ) 
+# line 102 
+z99994 = table_bw_females ( age_c ) 
+# line 102 
+z99993 = table_fetal_weight ( ga ) 
+# line 102 
+bw_c = adj_bw * ( ( io_conception - io_delivery ) * z99993 + ( io_delivery ) * ( ( 1 - sex ) * z99994 + sex * z99995 ) ) 
+# line 104 
+
+
+vd_m = vd_bw * bw_m 
+vd_c = vd_bw * bw_c + 1e-03 
+
+
+ktrans1 = p_cm 
+ktrans2 = 1.0 
+diff_m_c = ( io_conception - io_delivery ) * ktrans1 * c_mother 
+diff_c_m = ( io_conception - io_delivery ) * ktrans2 * c_child 
+
+
+# line 116 
+volume_milk_1st_year = bw_c * ( - 0.312 * ( age_c * 365.0 ) + 157.7 ) / 24000.0 
+volume_milk_2nd_year = ( - 0.2785 * age_c + 0.7203 ) / 24 
+# line 118 
+volume_milk = io_bf * ( io_delivery - io_end_total_bf ) * ( ( 1 - io_child_12m ) * volume_milk_1st_year + ( io_child_12m - io_child_30m ) * volume_milk_2nd_year ) 
+# line 121 
+c_milk = pmilk * c_mother 
+transfer_bf = volume_milk * c_milk 
+
+
+elimination_m = c_mother * vd_m * log ( 2 ) / half_life 
+elimination_c = c_child * vd_c * log ( 2 ) / half_life 
+
+
+intake_m = dose_m * bw_m / 24 
+intake_c = io_child_6m * dose_m * bw_c / 24 
+
+
+initial 
+io_conception = 0 
+io_delivery = 0 
+io_child_6m = 0 
+io_child_12m = 0 
+io_child_30m = 0 
+io_weight_c = 0 
+io_end_total_bf = 0 
+mom_c_del = 0 
+mom_c_samp = 0 
+end 
+if ( total_bf .eq. 0 ) then 
+io_bf = 0 
+else if ( total_bf .gt. 0 ) then 
+io_bf = 1 
+endif 
+schedule conception .xn. ( age_conception - age_m ) 
+discrete conception 
+io_conception = 1 
+end 
+schedule del .xn. ( age_delivery - age_m ) 
+discrete del 
+io_delivery = 1 
+mom_c_del = c_mother 
+end 
+schedule momsamp .xn. ( age_sample_m - age_m ) 
+discrete momsamp 
+mom_c_samp = c_mother 
+end 
+schedule child6m .xn. ( 0.500 - age_c ) 
+discrete child6m 
+io_child_6m = 1 
+end 
+schedule child12m .xn. ( 1.000 - age_c ) 
+discrete child12m 
+io_child_12m = 1 
+end 
+schedule child30m .xn. ( 2.500 - age_c ) 
+discrete child30m 
+io_child_30m = 1 
+end 
+schedule childw .xn. ( age_weight_c - age_c ) 
+discrete childw 
+io_weight_c = 1 
+end 
+schedule endtotalbf .xn. ( total_bf - age_c ) 
+discrete endtotalbf 
+io_end_total_bf = 1 
+end 
+
+
+
+ra_mother = intake_m - elimination_m - transfer_bf - diff_m_c + diff_c_m 
+# line 187 
+# line 205 
+z99992 = ra_mother 
+# line 205 
+z99991 = 0.0 
+# line 205 
+integral a_mother = z99992 , z99991 
+c_mother = a_mother / vd_m 
+# line 207 
+z99990 = c_mother 
+# line 207 
+z99989 = 0.0 
+# line 207 
+integral auc_c_mother = z99990 , z99989 
+
+ra_child = intake_c + transfer_bf - elimination_c + diff_m_c - diff_c_m 
+# line 193 
+# line 211 
+z99988 = ra_child 
+# line 211 
+z99987 = 0.0 
+# line 211 
+integral a_child = z99988 , z99987 
+c_child = a_child / vd_c 
+# line 213 
+z99986 = c_child 
+# line 213 
+z99985 = 0.0 
+# line 213 
+integral auc_c_child = z99986 , z99985 
+
+# line 197 
+dose_ratio = ( ( transfer_bf + intake_c ) / ( bw_c + 1e-10 ) ) / ( dose_m + 1e-10 ) 
+level_ratio = io_delivery * c_child / ( mom_c_del + 1e-10 ) 
+
+
+# line 220 
+if ( t .ge. ( tstop ) ) then 
+# line 220 
+call zztrmt ( ' ' ) 
+# line 220 
+endif 
+end 
+end 
+end 
