@@ -28,6 +28,8 @@ c_levels    = [];
 ratio_level = [];
 ratio_dose  = [];
 c_milk = [];
+age_c = [];
+age_m = [];
 
 for x = 1 : NUMITS; 
 
@@ -84,6 +86,8 @@ c_levels    = [c_levels _c_child(idxs)];
 ratio_level = [ratio_level _level_ratio(idxs)];
 ratio_dose  = [ratio_dose _dose_ratio(idxs)];
 c_milk = [c_milk _c_milk(idxs)];
+age_c = [age_c _age_c(idxs)];
+age_m = [age_m _age_m(idxs)];
 
 end
 
@@ -91,3 +95,5 @@ xlsWrite("C:\acslX\PFAS_pregnancy_and_lactation\Verner_2015_lactation_MC\MC_Lact
 xlsWrite("C:\acslX\PFAS_pregnancy_and_lactation\Verner_2015_lactation_MC\MC_LactPFAS_PFHXS_2015.xls","RATIO_LEVEL","A2:IV10001",ratio_level');
 xlsWrite("C:\acslX\PFAS_pregnancy_and_lactation\Verner_2015_lactation_MC\MC_LactPFAS_PFHXS_2015.xls","RATIO_DOSE","A2:IV10001",ratio_dose');
 xlsWrite("C:\acslX\PFAS_pregnancy_and_lactation\Verner_2015_lactation_MC\MC_LactPFAS_PFHXS_2015.xls","C_MILK","A2:IV10001",c_milk');
+xlsWrite("C:\acslX\PFAS_pregnancy_and_lactation\Verner_2015_lactation_MC\MC_LactPFAS_PFHXS_2015.xls","AGE_C","A2:IV10001",age_c');
+xlsWrite("C:\acslX\PFAS_pregnancy_and_lactation\Verner_2015_lactation_MC\MC_LactPFAS_PFHXS_2015.xls","AGE_M","A2:IV10001",age_m');
