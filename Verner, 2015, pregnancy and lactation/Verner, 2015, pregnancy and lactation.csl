@@ -42,6 +42,7 @@ else if(compound .eq. 2) then
 PFOS = 0
 PFOA = 1
 PFHXS = 0
+else if(compound .eq. 3) then
 PFOS = 0
 PFOA = 0
 PFHXS = 1

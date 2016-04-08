@@ -1,6 +1,5 @@
 <project>
   <csl name="Verner, 2015, pregnancy and lactation.csl" location="." />
   <mscript name="Verner, 2015, pregnancy and lactation.m" location="." />
-  <exe name="Verner, 2015, pregnancy and lactation.dll" location="." />
   <resultsfolder name="" location="." />
 </project>

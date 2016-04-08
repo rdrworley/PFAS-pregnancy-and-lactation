@@ -1,0 +1,5 @@
+<project>
+  <csl name="erratum code.csl" location="." />
+  <mscript name="erratum.m" location="." />
+  <resultsfolder name="" location="" />
+</project>

@@ -1,0 +1,236 @@
+PROGRAM LactPFAS_Verner_2015
+
+!******************************************************************************************************
+! Model coded by Marc-Andre Verner
+! Department of Occupational and Environmental Health
+! School of Public Health
+! Universite de Montreal
+!
+! *Units*
+! Time: hours
+! Volume: liters
+! Amounts: ug
+!******************************************************************************************************
+
+INITIAL
+
+!******************************************************************************************************
+! Subject-specific characteristics
+constant Age_delivery          = 30      ! Maternal age at delivery (years)
+constant Weight_prepregnancy_M = 70      ! Pre-pregnancy maternal body weight (kg)
+constant Birthweight           = 3.4     ! Child's birth weight (kg)
+constant Weight_C              = 12.1    ! Child's weight (kg) at Age_weight_C
+constant Age_weight_C          = 2.0     ! At age child weight measurement (years)
+constant Sex                   = 0       ! Sex of child (Female=0; Male=1)
+constant Total_bf              = 0.5     ! Total duration of breastfeeding (years)
+constant Age_sample_M          = 29.8    ! Age at maternal blood sample (years)
+constant Compound              = 2       ! Compound (1:PFOS, 2:PFOA, 3:PFHxS)
+constant Dose_M                = 0.001   ! Maternal oral dose (ug/kg/d)
+Age_conception = AGE_delivery-0.769
+
+!******************************************************************************************************
+! Median weight (kg) profiles (index: age in years)
+table table_bw_females,1,10/0.0, 0.5, 1.0, 2.0, 5.0, 10.0, 13.0, 16.0, 20.0, 100.0, &
+                            3.4, 7.2, 9.5, 12.1, 18.0, 33.0, 46.0, 54.0, 58.0, 58.0/
+table table_bw_males  ,1,10/0.0, 0.5, 1.0, 2.0, 5.0, 10.0, 13.0, 16.0, 20.0, 100.0, &
+                            3.5, 7.8, 10.3, 12.7, 18.0, 32.0, 46.0, 61.0, 71.0, 71.0/
+table table_fetal_weight,1,7/0.0, 0.217, 0.353, 0.463, 0.551, 0.639, 0.768, &
+                             0.0, 0.0, 0.26, 0.69, 1.25, 2.02, 3.28/
+
+!******************************************************************************************************
+! Compound
+if(compound .eq. 1) then
+PFOS  = 1 
+PFOA  = 0 
+PFHXS = 0
+else if(compound .eq. 2) then
+PFOS  = 0 
+PFOA  = 1 
+PFHXS = 0
+else if(compound .eq. 3) then
+PFOS  = 0 
+PFOA  = 0 
+PFHXS = 1
+endif
+
+!******************************************************************************************************
+! Volume of distribution (l/kg)
+constant PFOS_VD_BW  = 0.230   ! PFOS
+constant PFOA_VD_BW  = 0.170   ! PFOA
+constant PFHXS_VD_BW = 0.213   ! PFHxS
+VD_BW = PFOS*PFOS_VD_BW+PFOA*PFOA_VD_BW+PFHXS*PFHXS_VD_BW
+
+!******************************************************************************************************
+! Plasma:milk level ratio
+constant PFOS_PMilk  = 0.0138   ! PFOS
+constant PFOA_PMilk  = 0.0577   ! PFOA
+constant PFHXS_PMilk = 0.0140   ! PFHxS
+PMilk = PFOS*PFOS_PMilk+PFOA*PFOA_PMilk+PFHXS*PFHXS_PMilk
+
+!******************************************************************************************************
+! Cord:maternal plasma level ratio
+constant PFOS_P_CM  = 0.454     ! PFOS 
+constant PFOA_P_CM  = 0.783     ! PFOA
+constant PFHXS_P_CM = 0.556     ! PFHxS
+P_CM = PFOS*PFOS_P_CM+PFOA*PFOA_P_CM+PFHXS*PFHXS_P_CM
+
+!******************************************************************************************************
+! Half-lives (years)
+constant PFOS_HL  = 5.4   ! PFOS 
+constant PFOA_HL  = 3.8   ! PFOA 
+constant PFHXS_HL = 8.5   ! PFHxS
+HALF_LIFE = (PFOS*PFOS_HL+PFOA*PFOA_HL+PFHXS*PFHXS_HL)*365*24
+
+!******************************************************************************************************
+! Simulation time (5 years after delivery)
+TSTOP = (Age_delivery+5.0)*365*24
+
+END
+
+DYNAMIC
+!******************************************************************************************************
+! Simulation parameters
+ALGORITHM IALG = 2        ! Use Gear algorithm
+MAXTERVAL MAXT = 1E+10    ! Maximum interval for integrations
+MINTERVAL MINT = 1E-10    ! Minimum interval for integrations
+CINTERVAL CINT = 24       ! Communication interval
+
+DERIVATIVE
+
+!******************************************************************************************************
+! Maternal and child age (years)
+AGE_M = t/(365*24)                           ! Age of mother (years)
+AGE_C = IO_DELIVERY*(AGE_M-AGE_delivery)     ! Age of child (years)
+GA    = IO_CONCEPTION*(AGE_M-AGE_conception) ! Gestational age (years)
+
+!******************************************************************************************************
+! Maternal weight (kg)
+BW_M = (Weight_prepregnancy_M/table_bw_females(Age_conception))*table_bw_females(AGE_M)
+
+!******************************************************************************************************
+! Child weight (kg)
+
+! Adjustment factor for child's weight
+Adj_BW_C_pre  = Birthweight/3.28
+Adj_BW_C_post = Weight_C/((1-SEX)*table_bw_females(Age_weight_C)+SEX*table_bw_males(Age_weight_C))
+Adj_BW = (IO_CONCEPTION-IO_DELIVERY)*Adj_BW_C_pre + &
+         (IO_DELIVERY-IO_WEIGHT_C)*(Adj_BW_C_pre+AGE_C*(Adj_BW_C_post-Adj_BW_C_pre)/Age_weight_C) + &
+         (IO_WEIGHT_C)*Adj_BW_C_post
+
+! Child's weight profile
+BW_C = Adj_BW*((IO_CONCEPTION-IO_DELIVERY)*table_fetal_weight(GA) + &
+      (IO_DELIVERY)*((1-SEX)*table_bw_females(AGE_C)+SEX*table_bw_males(AGE_C)))
+
+!******************************************************************************************************
+! Volume of distribution (l)
+VD_M = VD_BW*BW_M          ! Maternal volume of distribution (l)
+VD_C = VD_BW*BW_C+1E-03    ! Child volume of distribution (l)
+
+!******************************************************************************************************
+! Placental diffusion
+ktrans1  = P_CM    ! Mother->fetus placental transfer constant (l/h)
+ktrans2  = 1.0     ! Fetus->mother placental transfer constant (l/h)
+DIFF_M_C = (IO_CONCEPTION-IO_DELIVERY)*ktrans1*C_MOTHER ! Mother->fetus placental transfer rate (ug/h)
+DIFF_C_M = (IO_CONCEPTION-IO_DELIVERY)*ktrans2*C_CHILD  ! Fetus->mother placental transfer rate (ug/h)
+
+!******************************************************************************************************
+! Breast milk transfer
+VOLUME_MILK_1ST_YEAR = BW_C*(-0.312*(AGE_C*365.0)+157.7)/24000.0
+VOLUME_MILK_2ND_YEAR = (-0.2785*AGE_C+0.7203)/24 
+VOLUME_MILK = IO_BF*(IO_DELIVERY-IO_END_TOTAL_BF)* & 
+((1-IO_CHILD_12m)*VOLUME_MILK_1ST_YEAR &    
++(IO_CHILD_12m-IO_CHILD_30m)*VOLUME_MILK_2ND_YEAR)  ! Breast milk consumption rate (l/h)
+C_MILK      = Pmilk*C_MOTHER                        ! Concentration in breast milk (ug/l)
+TRANSFER_BF = VOLUME_MILK*C_MILK                    ! Mother-child lactational transfer (ug/h)
+
+!******************************************************************************************************
+! Elimination
+ELIMINATION_M = C_MOTHER*VD_M*log(2)/HALF_LIFE  ! Elimination from the maternal compartment (ug/h)
+ELIMINATION_C = C_CHILD*VD_C*log(2)/HALF_LIFE   ! Elimination from the child compartment (ug/h)
+
+!******************************************************************************************************
+! Dosing
+INTAKE_M = DOSE_M*BW_M/24               ! Maternal PFAS intake (ug/h)
+INTAKE_C = IO_CHILD_6m*DOSE_M*BW_C/24   ! Child PFAS intake (ug/h)
+
+!******************************************************************************************************
+! Switches I/O for time events
+initial
+IO_CONCEPTION          = 0
+IO_DELIVERY            = 0
+IO_CHILD_6m            = 0
+IO_CHILD_12m           = 0
+IO_CHILD_30m           = 0
+IO_WEIGHT_C            = 0
+IO_END_TOTAL_BF        = 0
+MOM_C_DEL              = 0
+MOM_C_SAMP             = 0
+end
+
+if(TOTAL_BF .eq. 0) then 
+IO_BF = 0
+else if(TOTAL_BF .gt. 0) then 
+IO_BF =1
+endif
+schedule conception .xn. (Age_conception-AGE_M)
+discrete conception
+	IO_CONCEPTION = 1
+End
+schedule del .xn. (Age_delivery-AGE_M)
+discrete del
+	IO_DELIVERY = 1
+  MOM_C_DEL   = C_MOTHER
+End
+schedule momsamp .xn. (Age_sample_M-AGE_M)
+discrete momsamp
+	MOM_C_SAMP = C_MOTHER
+End
+schedule child6m .xn. (0.500-AGE_C)
+discrete child6m
+  IO_CHILD_6m        = 1
+End
+schedule child12m .xn. (1.000-AGE_C)
+discrete child12m
+	IO_CHILD_12m = 1
+End
+schedule child30m .xn. (2.500-AGE_C)
+discrete child30m
+	IO_CHILD_30m = 1
+End
+schedule childw .xn. (Age_weight_C-AGE_C)
+discrete childw
+  IO_WEIGHT_C = 1
+End
+schedule endtotalbf .xn. (Total_bf-AGE_C)
+discrete endtotalbf
+	IO_END_TOTAL_BF = 1
+End
+
+!******************************************************************************************************
+! Mass-balance differential equations
+
+! Maternal compartment
+RA_MOTHER    = INTAKE_M-ELIMINATION_M- &
+               TRANSFER_BF-DIFF_M_C+DIFF_C_M   ! Rate of amount in maternal compartment (ug/h)
+A_MOTHER     = INTEG(RA_MOTHER, 0.0)           ! Amount in maternal compartment (ug)
+C_MOTHER     = A_MOTHER/VD_M                   ! Concentration in maternal compartment (ug/l)
+AUC_C_MOTHER = INTEG(C_MOTHER, 0.0)            ! Area under the curve (ug*h/l)
+
+! Child compartment
+RA_CHILD    = INTAKE_C+TRANSFER_BF- &          
+              ELIMINATION_C+DIFF_M_C-DIFF_C_M  ! Rate of amount in child compartment (ug/h)
+A_CHILD     = INTEG(RA_CHILD, 0.0)             ! Amount in child compartment (ug)
+C_CHILD     = A_CHILD/VD_C                     ! Concentration in child compartment (ug/l)
+AUC_C_CHILD = INTEG(C_CHILD, 0.0)              ! Area under the curve (ug*h/l)
+
+! Ratios
+DOSE_RATIO  = (24*(TRANSFER_BF+INTAKE_C)/(BW_C+1E-10))/(24*INTAKE_M/(BW_M+1E-10))
+LEVEL_RATIO = IO_DELIVERY*C_CHILD/(MOM_C_DEL+1E-10)
+
+!******************************************************************************************************
+! End simulation
+TERMT (T .GE. (TSTOP))
+
+END ! DERIVATIVE
+END ! DYNAMIC
+END ! PROGRAM
