@@ -195,7 +195,7 @@ A_CHILD = INTEG(RA_CHILD, 0.0) ! Amount in child compartment (ug)
 C_CHILD = A_CHILD/VD_C ! Concentration in child compartment (ug/l)
 AUC_C_CHILD = INTEG(C_CHILD, 0.0) ! Area under the curve (ug*h/l)
 ! Ratios
-DOSE_RATIO = ((TRANSFER_BF+INTAKE_C)/(BW_C+1E-10))/(DOSE_M+1E-10)
+DOSE_RATIO  = ((TRANSFER_BF+INTAKE_C)/(BW_C+0.000000001))/(INTAKE_M/(BW_M+0.000000001))
 LEVEL_RATIO = IO_DELIVERY*C_CHILD/(MOM_C_DEL+1E-10)
 !******************************************************************************************************
 ! End simulation
