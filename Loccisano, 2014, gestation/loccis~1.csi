@@ -1,0 +1,643 @@
+program 
+
+
+
+
+
+
+
+
+table dvplasc , 1 , 28 / 9 , 10 , 11 , 12 , 13 , 14 , 15 , 16 , 17 , 18 , 19 , 20 , 21 , 22 , 23 , 24 , 25 , 26 , 27 , 28 , 29 , 30 , 31 , 32 , 33 , 34 , 35 , 36 , 0.0442 , 0.0445 , 0.0448 , 0.0451 , 0.0454 , 0.0456 , 0.0458 , 0.0460 , 0.0461 , 0.0462 , 0.0463 , 0.0464 , 0.0464 , 0.0464 , 0.0464 , 0.0463 , 0.0463 , 0.0461 , 0.0460 , 0.0458 , 0.0456 , 0.0454 , 0.0451 , 0.0448 , 0.0445 , 0.0441 , 0.0437 , 0.0433 / 
+# line 14 
+
+
+table dhtc , 1 , 9 / 0 , 11 , 16 , 20 , 24 , 28 , 32 , 36 , 40 , 0.38 , 0.372 , 0.356 , 0.354 , 0.349 , 0.347 , 0.346 , 0.354 , 0.367 / 
+# line 18 
+
+
+table dqk , 1 , 26 / 0 , 8 , 10 , 11 , 12 , 13 , 15 , 17 , 18 , 19 , 22 , 23 , 24 , 25 , 26 , 27 , 28 , 29 , 31 , 32 , 33 , 34 , 36 , 37 , 38 , 40 , 24.42 , 50.58 , 45.42 , 51.36 , 57.12 , 46.32 , 44.73 , 45.36 , 41.8 , 46.53 , 46.08 , 47.85 , 43.05 , 41.16 , 47.52 , 43.41 , 48.57 , 46.36 , 36.68 , 39.44 , 46.46 , 44.13 , 26.7 , 33.92 , 35.46 , 40.26 / 
+# line 22 
+
+
+table dqfil , 1 , 40 / 0 , 1 , 2 , 3 , 4 , 5 , 6 , 7 , 8 , 9 , 10 , 11 , 12 , 13 , 14 , 15 , 16 , 17 , 18 , 19 , 20 , 21 , 22 , 23 , 24 , 25 , 26 , 27 , 28 , 29 , 30 , 31 , 32 , 33 , 34 , 35 , 36 , 37 , 38 , 39 , 6.0 , 6.0 , 6.0 , 6.0 , 6.0 , 6.03 , 6.09 , 6.18 , 6.32 , 6.50 , 6.72 , 6.97 , 7.23 , 7.50 , 7.76 , 8.01 , 8.23 , 8.43 , 8.60 , 8.75 , 8.86 , 8.95 , 9.01 , 9.05 , 9.06 , 9.06 , 9.04 , 8.99 , 8.95 , 8.88 , 8.81 , 8.72 , 8.62 , 8.52 , 8.41 , 8.29 , 8.16 , 8.03 , 7.89 , 7.75 / 
+# line 26 
+
+
+table vafx , 1 , 20 / 0 , 8 , 9 , 10 , 11 , 12 , 16 , 18 , 20 , 22 , 24 , 26 , 28 , 30 , 32 , 34 , 36 , 38 , 40 , 42 , 0.0237 , 0.0235 , 0.0234 , 0.0232 , 0.0766 , 0.124 , 0.195 , 0.284 , 0.361 , 0.646 , 0.640 , 0.687 , 0.770 , 0.824 , 0.776 , 0.817 , 0.817 , 0.799 , 0.530 , 0.506 / 
+
+initial 
+
+constant frac = 0.0 
+
+
+
+constant qcc = 20. 
+constant qlc = 0.25 
+constant qskc = 0.058 
+constant qgc = 0.181 
+
+constant bwinit = 67.7 
+constant qmamc = 0.027 
+constant qfatc = 0.052 
+constant numfet = 1 
+
+
+
+constant vlc = 0.026 
+constant vkc = 0.004 
+constant vfilc = 0.0004 
+constant vgc = 0.0171 
+
+constant vmamc = 0.0062 
+constant vfatc = 0.214 
+
+
+
+
+constant pl = 2.2 
+constant pfat = 0.04 
+constant pk = 1.05 
+constant psk = 0.1 
+constant pr = 0.12 
+constant pg = 0.05 
+constant pmam = 0.13 
+constant ppla = 0.28 
+
+constant tmc = 10 
+
+constant kt = 0.055 
+constant free = 0.02 
+
+constant kurinec = 0.1 
+
+
+freel = free / pl 
+freek = free / pk 
+freer = free / pr 
+freeg = free / pg 
+freefat = free / pfat 
+freesk = free / psk 
+freemam = free / pmam 
+freepla = free / ppla 
+
+
+constant prf = 0.12 
+constant freef = 0.02 
+constant htcf = 0.5 
+constant vplasfc = 0.0428 
+
+freefr = freef / prf 
+
+
+constant ktrans1c = 0.46 
+constant ktrans2c = 0.46 
+
+
+constant ktrans3c = 0.008 
+constant ktrans4c = 0.001 
+
+
+constant aplas0 = 0.005859 
+constant ag0 = 0.005852 
+constant al0 = 0.391533 
+constant afat0 = 0.058594 
+constant ak0 = 0.034487 
+constant afil0 = 9.8641e-008 
+constant adelay0 = 0.000647 
+constant amam0 = 0.00 
+constant ask0 = 0.000950 
+constant aurine0 = 4.452856 
+constant ar0 = 0.439221 
+
+
+constant afplas0 = 0.0 
+constant aftis0 = 0.0 
+
+
+constant tstop = 6552 
+
+end 
+dynamic 
+
+algorithm ialg = 2 
+cinterval cint = 0.2 
+
+
+constant pdose = 1.2e-04 
+
+
+constant drinkconc = 0.0 
+constant drinkrate = 0.0 
+
+
+
+constant ivconc = 0.0 
+
+
+tlast = tstop 
+
+torald = tlast + tinf 
+constant tstart = 0.0 
+
+
+constant tzero = 0.0 
+constant tinf = 24 
+numdose = ( torald+24. - tstart ) / 24 
+
+
+
+discrete dwint 
+interval c2 = 24.0 
+# line 153 
+if ( ( t .ge. tstart ) .and. ( t .le. torald ) ) cint = 0.2 
+schedule dwon .at. t + tzero 
+
+end 
+
+discrete dwon 
+if ( drinkconc .gt. 0.0 ) cint = 0.2 
+dwx = drinkconc 
+schedule dwoff .at. t + tinf 
+end 
+
+discrete dwoff 
+dwx = 0.0 
+
+end 
+
+
+
+discrete ivint 
+interval c3 = 24.0 
+if ( ivr .gt. 0 ) cint = 0.2 
+schedule ivon .at. t + tstart 
+end 
+
+discrete ivon 
+ivx = ivconc 
+schedule ivoff .at. t + tinf 
+end 
+
+discrete ivoff 
+ivx = 0. 
+end 
+
+
+derivative 
+
+
+# line 190 
+pdrink = ( ( ( dwx * drinkrate ) / 1000 ) * bw ) / tinf 
+
+
+iv = ivx * bw / tinf 
+ivdose = ivx * bw 
+
+
+gd = t / 24. 
+wk = gd / 7. 
+
+procedural 
+
+vplasc = dvplasc ( wk ) 
+
+htc = dhtc ( wk ) 
+
+qk = dqk ( wk ) 
+qki = dqk ( 0. ) 
+
+qfil_r = dqfil ( wk ) 
+qfili = dqfil ( 0. ) 
+
+vaf = vafx ( wk ) 
+
+end 
+
+
+
+
+
+constant vplaa = 0.85 
+constant vplab = - 9.434 
+constant vplac = - 5.23e-4 
+# line 223 
+z99999 = exp ( vplac * ( gd * 24 ) ) 
+# line 223 
+z99998 = exp ( vplab * ( z99999 ) ) 
+# line 223 
+vpla = ( vplaa * z99998 ) 
+
+
+vfati = bwinit * vfatc 
+# line 227 
+z99997 = exp ( - 0.000797 * ( gd * 24 ) ) 
+# line 227 
+z99996 = exp ( - 12.90995862 * ( z99997 ) ) 
+# line 227 
+vfat = bwinit * ( ( ( vfatc + ( 0.09 * z99996 ) ) ) ) 
+# line 229 
+
+
+vmami = bwinit * vmamc 
+# line 232 
+z99995 = exp ( - 0.000678 * ( gd * 24 ) ) 
+# line 232 
+z99994 = exp ( - 7.444868477 * ( z99995 ) ) 
+# line 232 
+vmam = bwinit * ( ( ( vmamc + ( 0.0065 * z99994 ) ) ) ) 
+# line 234 
+
+
+
+constant vfea = 3.779 
+constant vfeb = - 16.081 
+constant vfec = - 5.67e-4 
+constant vfed = 3.833 
+constant vfee = - 140.178 
+constant vfef = - 7.01e-4 
+
+# line 244 
+z99993 = exp ( vfef * ( gd * 24 ) ) 
+# line 244 
+z99992 = exp ( vfee * ( z99993 ) ) 
+# line 244 
+z99991 = exp ( vfec * ( gd * 24 ) ) 
+# line 244 
+z99990 = exp ( vfeb * ( z99991 ) ) 
+# line 244 
+v1fet = ( vfea * z99990 + vfed * z99992 ) 
+# line 246 
+
+
+constant cvfil = 0.15 
+sdqfil = cvfil * qfil_r 
+constant qfilz = 0.0 
+qfil = qfil_r + sdqfil * qfilz 
+
+constant cvvfet = 0.15 
+sdvfet = cvvfet * v1fet 
+constant vfetz = 0.0 
+constant rho = 0.2 
+# line 257 
+vfet = v1fet + sdvfet * ( rho * qfilz + vfetz * ( 1 - rho ** 2 ) ** 0.5 ) 
+# line 259 
+
+
+vl = vlc * bwinit 
+vk = vkc * bwinit 
+vfil = vfilc * bwinit 
+vg = vgc * bwinit 
+
+vplas = vplasc * bw 
+
+
+# line 269 
+skintarea = 9.1 * ( ( bw * 1000 ) ** 0.666 ) 
+constant skinthickness = 0.1 
+constant skinarea = 972 
+
+vsk = ( skinarea * skinthickness ) / 1000 
+
+# line 275 
+bw = bwinit + ( vfat - vfati ) + ( vmam - vmami ) + vpla + vfet + vaf 
+
+
+vr = ( 0.84 * bw ) - vl - vk - vfil - vg - vplas - vsk - vmam - vfat - vpla - vfet - vaf 
+
+# line 280 
+vbal = ( 0.84 * bw ) - ( vl + vk + vfil + vg + vplas + vsk + vr + vfat + vmam + vpla + vfet + vaf ) 
+
+
+qcinit = qcc * bwinit ** 0.75 
+qcpinit = qcinit * ( 1 - htc ) 
+
+ql = qlc * qcpinit 
+qg = qgc * qcpinit 
+qsk = qskc * qcpinit * ( skinarea / skintarea ) 
+
+qfati = qfatc * qcpinit 
+qfat = qfati * ( vfat / vfati ) 
+
+qmami = qmamc * qcpinit 
+qmam = qmami * ( vmam / vmami ) 
+
+qpla1 = 58.5 * vpla 
+qpla = qpla1 * ( 1 - htc ) 
+
+# line 299 
+qc = qcpinit + ( qfat - qfati ) + ( qmam - qmami ) + ( qk - qki ) + ( qfil - qfili ) + qpla 
+
+qr = qc - ( ql + qk + qfil + qg + qsk + qfat + qmam + qpla ) 
+qbal = qc - ( ql + qk + qfil + qg + qsk + qr + qfat + qmam + qpla ) 
+
+# line 304 
+kurine = kurinec * ( bw ** ( - 0.25 ) ) 
+tm = tmc * bw ** 0.75 
+
+
+vplasf = vplasfc * vfet 
+
+vrf = ( 0.92 * vfet ) - vplasf 
+# line 311 
+vfetbal = ( 0.92 * vfet ) - ( vrf + vplasf ) 
+
+
+constant qfetc = 54.0 
+qfet = qfetc * vplasf * ( 1 - htcf ) 
+
+qrf = qfet 
+qfetbal = qfet - qrf 
+
+
+
+# line 322 
+ktrans1 = ktrans1c * ( ( v1fet ** 0.75 ) * numfet ) 
+# line 323 
+ktrans2 = ktrans2c * ( ( v1fet ** 0.75 ) * numfet ) 
+# line 324 
+ktrans3 = ktrans3c * ( ( v1fet ** 0.75 ) * numfet ) 
+# line 325 
+ktrans4 = ktrans4c * ( ( v1fet ** 0.75 ) * numfet ) 
+
+
+
+
+rfat = qfat * ( ca * free - cfat * freefat ) 
+# line 366 
+z99989 = rfat 
+# line 366 
+z99988 = afat0 
+# line 366 
+integral afat = z99989 , z99988 
+cfat = afat / vfat 
+cvfat = cfat / pfat 
+
+
+rmam = qmam * ( ca * free - cmam * freemam ) 
+# line 372 
+z99987 = rmam 
+# line 372 
+z99986 = amam0 
+# line 372 
+integral amam = z99987 , z99986 
+cmam = amam / vmam 
+cvmam = cmam / pmam 
+
+
+rg = qg * ( ca * free - cg * freeg ) + pdrink 
+# line 378 
+z99985 = rg 
+# line 378 
+z99984 = ag0 
+# line 378 
+integral ag = z99985 , z99984 
+cg = ag / vg 
+cvg = cg / pg 
+
+# line 382 
+z99983 = pdrink 
+# line 382 
+z99982 = 0.0 
+# line 382 
+integral drinktotal = z99983 , z99982 
+
+
+# line 350 
+rl = ( ql * ( ca * free ) ) + ( qg * cg * freeg ) - ( ( ql + qg ) * cl * freel ) 
+# line 387 
+z99981 = rl 
+# line 387 
+z99980 = al0 
+# line 387 
+integral al = z99981 , z99980 
+cl = al / vl 
+cvl = cl / pl 
+
+
+
+# line 357 
+rk = qk * ( ca * free - ck * freek ) + ( tm * cfil ) / ( kt + cfil ) 
+# line 395 
+z99979 = rk 
+# line 395 
+z99978 = ak0 
+# line 395 
+integral ak = z99979 , z99978 
+ck = ak / vk 
+cvk = ck / pk 
+
+
+# line 363 
+rfil = qfil * ( ca * free - cfil ) - ( tm * cfil ) / ( kt + cfil ) 
+# line 402 
+z99977 = rfil 
+# line 402 
+z99976 = afil0 
+# line 402 
+integral afil = z99977 , z99976 
+cfil = afil / vfil 
+
+
+rdelay = qfil * cfil - kurine * adelay 
+# line 407 
+z99975 = rdelay 
+# line 407 
+z99974 = adelay0 
+# line 407 
+integral adelay = z99975 , z99974 
+
+
+rurine = kurine * adelay 
+# line 411 
+z99973 = rurine 
+# line 411 
+z99972 = aurine0 
+# line 411 
+integral aurine = z99973 , z99972 
+
+
+rsk = qsk * ( ca * free - csk * freesk ) 
+# line 415 
+z99971 = rsk 
+# line 415 
+z99970 = ask0 
+# line 415 
+integral ask = z99971 , z99970 
+csk = ask / vsk 
+cvsk = csk / psk 
+
+
+rr = qr * ( ca * free - cr * freer ) 
+# line 421 
+z99969 = rr 
+# line 421 
+z99968 = ar0 
+# line 421 
+integral ar = z99969 , z99968 
+cr = ar / vr 
+cvr = cr / pr 
+
+
+# line 388 
+rplas = ( qfat * cfat * freefat ) + ( ( ql + qg ) * cl * freel ) + ( qr * cr * freer ) + ( qsk * csk * freesk ) + ( qk * ck * freek ) + ( qmam * cmam * freemam ) - ( qc * ca * free ) + ( qpla * cpla * freepla ) + iv 
+# line 390 
+# line 429 
+z99967 = rplas 
+# line 429 
+z99966 = aplas0 
+# line 429 
+integral aplas = z99967 , z99966 
+cafree = aplas / vplas 
+ca = cafree / free 
+aplastot = ca * vplas 
+# line 433 
+z99965 = ca 
+# line 433 
+z99964 = 0.0 
+# line 433 
+integral aucplas = z99965 , z99964 
+
+# line 435 
+z99963 = iv 
+# line 435 
+z99962 = 0.0 
+# line 435 
+integral ivr = z99963 , z99962 
+
+
+
+rpla = qpla * ( ca * free - cpla * freepla ) - rtrans1 + rtrans2 
+# line 440 
+z99961 = rpla 
+# line 440 
+z99960 = 0.0 
+# line 440 
+integral apla = z99961 , z99960 
+cpla = apla / vpla 
+cvpla = cpla / ppla 
+
+
+
+rtrans1 = ktrans1 * cpla * freepla 
+# line 447 
+z99959 = rtrans1 
+# line 447 
+z99958 = 0.0 
+# line 447 
+integral atrans1 = z99959 , z99958 
+rtrans2 = ktrans2 * ca_f * freef 
+# line 449 
+z99957 = rtrans2 
+# line 449 
+z99956 = 0.0 
+# line 449 
+integral atrans2 = z99957 , z99956 
+
+
+
+rrf = qrf * ( ca_f * freef - crf * freefr ) - rtrans3 + rtrans4 
+# line 454 
+z99955 = rrf 
+# line 454 
+z99954 = 0.0 
+# line 454 
+integral arrf = z99955 , z99954 
+crf = arrf / ( vrf + 1.0e-33 ) 
+cvrf = crf / prf 
+
+
+ramf = rtrans3 - rtrans4 
+# line 460 
+z99953 = ramf 
+# line 460 
+z99952 = 0.0 
+# line 460 
+integral aamf = z99953 , z99952 
+camf = aamf / ( vaf + 1.0e-7 ) 
+
+
+rtrans3 = ktrans3 * ca_f * freef 
+# line 465 
+z99951 = rtrans3 
+# line 465 
+z99950 = 0.0 
+# line 465 
+integral atrans3 = z99951 , z99950 
+rtrans4 = ktrans4 * camf 
+# line 467 
+z99949 = rtrans4 
+# line 467 
+z99948 = 0.0 
+# line 467 
+integral atrans4 = z99949 , z99948 
+
+
+# line 431 
+rplasf = ( qrf * crf * freefr ) - ( qfet * ca_f * freef ) + rtrans1 - rtrans2 
+# line 472 
+z99947 = rplasf 
+# line 472 
+z99946 = 0.0 
+# line 472 
+integral aplasf = z99947 , z99946 
+ca_f_free = aplasf / ( vplasf + 1.0e-7 ) 
+ca_f = ca_f_free / freef 
+aplastotf = ca_f * vplasf 
+# line 476 
+z99945 = ca_f 
+# line 476 
+z99944 = 0.0 
+# line 476 
+integral aucplasf = z99945 , z99944 
+
+
+
+
+
+atissue0 = aplas0 + ag0 + al0 + afat0 + ak0 + afil0 + adelay0 + amam0 + ar0 + ask0 
+aloss0 = aurine0 
+
+atissue = aplas + ag + al + afat + ak + afil + adelay + amam + ar + ask + apla 
+aloss = aurine + atrans1 - atrans2 
+
+atissuetotal = atissue - atissue0 
+alosstotal = aloss - aloss0 
+
+atotalbody = atissuetotal + alosstotal 
+
+if ( drinktotal .gt. 0.0 ) then 
+# line 454 
+mbal = ( drinktotal - ( atotalbody ) ) / ( drinktotal * 100 + 1.0e-7 ) 
+else 
+mbal = 0.0 
+endif 
+
+if ( ivr .gt. 0.0 ) then 
+# line 460 
+ivbal = ( ivr - ( atotalbody ) ) / ( ivr * 100 + 1.0e-7 ) 
+else 
+ivbal = 0.0 
+endif 
+
+
+
+atissuef = arrf + aplasf 
+alossf = atrans2 + atrans3 - atrans4 
+
+dosef = atrans1 
+
+# line 472 
+fbal = ( dosef - ( atissuef + alossf ) ) 
+
+
+
+# line 519 
+if ( t .ge. ( tstop ) ) then 
+# line 519 
+call zztrmt ( ' ' ) 
+# line 519 
+endif 
+end 
+end 
+end 
+

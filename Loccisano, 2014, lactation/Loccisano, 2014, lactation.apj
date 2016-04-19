@@ -1,6 +1,5 @@
 <project>
   <csl name="Loccisano et al, 2014, lactation.csl" location="." />
   <mscript name="Loccisano, 2014, lactation.m" location="." />
-  <exe name="Loccisano et al, 2014, lactation.dll" location="." />
   <resultsfolder name="" location="." />
 </project>

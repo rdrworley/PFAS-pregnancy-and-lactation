@@ -100,17 +100,17 @@ INITIAL
    
   
  !initial tissue amounts of chemical
-Constant APLAS0 = 0.1389
-Constant AG0 = 0.1240
-Constant AL0 = 8.2977
-Constant AFAT0 = 1.7402
-Constant AK0 = 0.7082
-Constant AFIL0 = 1.7455e-006
-Constant ADELAY0 = 0.0143
-Constant AMAM0 = 0.2321
-Constant ASK0 = 0.0208
-Constant AURINE0 = 102.9814
-Constant AR0 = 8.8077
+Constant APLAS0 = 0.219992
+Constant AG0 = 0.192826
+Constant AL0 = 12.8851
+Constant AFAT0 = 2.68258
+Constant AK0 = 1.13892
+Constant AFIL0 = 2.91074e-006
+Constant ADELAY0 = 0.0248588
+Constant AMAM0 = 0.355754
+Constant ASK0 = 0.0323248
+Constant AURINE0 = 7.97202
+Constant AR0 = 13.4075
 
 !infant
 Constant ARRI0 = 2.1946
