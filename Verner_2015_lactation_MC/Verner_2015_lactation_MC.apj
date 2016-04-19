@@ -1,5 +1,6 @@
 <project>
   <csl name="LactPFAS_Verner_2014_MC.csl" location="." />
   <mscript name="LactPFAS_Verner_MC.m" location="." />
+  <exe name="LactPFAS_Verner_2014_MC.dll" location="." />
   <resultsfolder name="" location="." />
 </project>

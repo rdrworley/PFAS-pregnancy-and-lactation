@@ -1,0 +1,570 @@
+program 
+
+
+
+
+
+table kmilkc , 1 , 10 / 0 , 30 , 60 , 90 , 120 , 150 , 180 , 270 , 360 , 450 , 0.0 , 0.028 , 0.0315 , 0.0326 , 0.03375 , 0.0335 , 0.0373 , 0.0269 , 0.0187 , 0.0187 / 
+
+
+table dvfatc , 1 , 8 / 0.0 , 2 , 12 , 24 , 36 , 48 , 60 , 72 , 0.30 , 0.295 , 0.295 , 0.285 , 0.285 , 0.285 , 0.260 , 0.240 / 
+
+
+table dvbw , 1 , 7 / 0 , 2 , 12 , 24 , 36 , 48 , 60 , 72 , 68 , 66.6 , 65.7 , 65.7 , 65.7 , 65.7 / 
+
+
+
+
+
+
+
+
+table dvmam , 1 , 3 / 0.0 , 14 , 168 , 0.005929 , 0.01412 , 0.01412 / 
+
+
+table dqfil , 1 , 11 / 0 , 1 , 2 , 3 , 4 , 5 , 6 , 7 , 8 , 9 , 10 , 7.7 , 7.5 , 7 , 6.8 , 6.5 , 6.2 , 6 , 6 , 6 , 6 , 6 / 
+
+
+table dvplas , 1 , 11 / 0 , 1 , 2 , 3 , 4 , 5 , 6 , 7 , 8 , 9 , 10 , 3.2 , 3.1 , 3 , 2.8 , 2.6 , 2.5 , 2.4 , 2.4 , 2.4 , 2.4 , 2.4 / 
+
+
+table dvplasc , 1 , 11 / 0 , 1 , 2 , 3 , 4 , 5 , 6 , 7 , 8 , 9 , 10 , 0.0457 , 0.0449 , 0.0441 , 0.0418 , 0.0388 , 0.0375 , 0.0365 , 0.0365 , 0.0365 , 0.0365 , 0.0365 / 
+
+
+
+table dbwkid , 1 , 22 / 0 , 0.5 , 1.5 , 2.5 , 3.5 , 4.5 , 5.5 , 6.5 , 7.5 , 8.5 , 9.5 , 10.5 , 11.5 , 12.5 , 13.5 , 14.5 , 15.5 , 16.5 , 17.5 , 18.5 , 19.5 , 20.5 , 3.53 , 4 , 4.88 , 5.67 , 6.39 , 7.04 , 7.63 , 8.16 , 8.64 , 9.08 , 9.48 , 9.84 , 10.16 , 10.46 , 10.73 , 10.98 , 11.21 , 11.42 , 11.62 , 11.8 , 11.98 , 12.14 / 
+# line 37 
+
+initial 
+
+constant frac = 0.0 
+
+
+
+constant qcc = 20.0 
+constant qfatc = 0.052 
+constant qmamc = 0.0248 
+constant qlivc = 0.25 
+constant qkidc = 0.175 
+constant qskc = 0.058 
+constant qgutc = 0.181 
+
+constant bwinit = 67.7 
+constant htc = 0.38 
+
+
+
+constant vlivc = 0.026 
+constant vkidc = 0.004 
+constant vfilc = 0.0004 
+constant vgutc = 0.0171 
+constant vmamc = 0.0062 
+constant vmilk = 0.25 
+
+
+
+
+constant pliv = 2.2 
+constant pfat = 0.04 
+constant pkid = 1.05 
+constant psk = 0.1 
+constant pr = 0.12 
+constant pgut = 0.05 
+constant pmilkp = 0.038 
+
+
+
+freefat = free / pfat 
+freemilk = free / pmilkp 
+freeg = free / pgut 
+freel = free / pliv 
+freek = free / pkid 
+freesk = free / psk 
+freer = free / pr 
+
+
+constant tmc = 10 
+constant kt = 0.055 
+constant free = 0.02 
+
+constant kurinec = 0.1 
+
+
+constant freei = 0.02 
+
+
+constant tstop = 18000 
+
+
+
+
+
+
+constant aplas0 = 0.1389 
+constant ag0 = 0.1240 
+constant al0 = 8.2977 
+constant afat0 = 1.7402 
+constant ak0 = 0.7082 
+constant afil0 = 1.7455e-006 
+constant adelay0 = 0.0143 
+constant amam0 = 0.2321 
+constant ask0 = 0.0208 
+constant aurine0 = 102.9814 
+constant ar0 = 8.8077 
+
+
+constant arri0 = 2.1946 
+
+end 
+
+dynamic 
+
+algorithm ialg = 2 
+cinterval cint = 0.2 
+
+
+constant drinkconc = 0.0 
+constant drinkrate = 0.0 
+
+
+constant ivconc1 = 2.39e-04 
+constant ivconc2 = 1.91e-04 
+
+
+
+if ( months .le. 6 ) then 
+ivconc = ivconc1 
+else 
+ivconc = ivconc2 
+endif 
+
+
+
+tlast = tlast 
+torald = tlast + tinf 
+constant tstart = 0.0 
+
+
+constant tzero = 0.0 
+constant tinf = 24. 
+numdose = ( torald+24. - tstart ) / 24 
+
+
+
+
+discrete dwint 
+interval c2 = 24.0 
+# line 157 
+if ( ( t .ge. tstart ) .and. ( t .le. torald ) ) cint = 0.2 
+schedule dwon .at. t + tzero 
+
+end 
+
+discrete dwon 
+if ( drinkconc .gt. 0.0 ) cint = 0.2 
+dwx = drinkconc 
+schedule dwoff .at. t + tinf 
+end 
+
+discrete dwoff 
+dwx = 0.0 
+
+end 
+
+
+discrete ivint 
+interval c3 = 24.0 
+if ( ivr .gt. 0 ) cint = 0.2 
+schedule ivon .at. t + tstart 
+end 
+
+discrete ivon 
+ivx = ivconc 
+schedule ivoff .at. t + tinf 
+end 
+
+discrete ivoff 
+ivx = 0. 
+end 
+
+derivative 
+
+
+# line 192 
+pdrink = ( ( ( dwx * drinkrate ) / 1000 ) * bw ) / tinf 
+
+
+iv = ivx * bw / tinf 
+ivdose = ivx * bw 
+
+pnd = t / 24. 
+wk = pnd / 7. 
+months = pnd / 30.4375 
+year = pnd / 365. 
+
+procedural 
+
+
+
+kmilk1 = kmilkc ( pnd ) 
+
+vmamt = dvmam ( pnd ) 
+
+
+qfil = dqfil ( wk ) 
+qfili = dqfil ( 0. ) 
+
+
+vplas = dvplas ( wk ) 
+
+
+vplasc = dvplasc ( wk ) 
+vplasci = dvplasc ( 0. ) 
+
+bw = dvbw ( wk ) 
+bwi = dvbw ( 0. ) 
+
+vfatc = dvfatc ( wk ) 
+vfatic = dvfatc ( 0. ) 
+vfatfc = dvfatc ( 48. ) 
+
+
+
+bwkid = dbwkid ( months ) 
+
+
+end 
+
+
+if ( months .le. 6 ) then 
+kmilk = kmilk1 
+else 
+kmilk = 0.0 
+endif 
+
+
+
+qcpre1 = qcc * bwinit ** 0.75 
+qcpre = qcpre1 * ( 1 - htc ) 
+
+
+# line 249 
+qcpost = ( qcpre * ( 1 + ( qfatc * ( ( 0.4 / vfatfc ) - 1 ) ) + ( qmamc * ( ( 0.05 / vmamc ) - 1 ) ) ) ) 
+# line 251 
+
+
+qfati = qfatc * qcpre * ( 0.4 / vfatfc ) 
+qmami = qmamc * qcpre * ( 0.05 / vmamc ) 
+
+qliv = qlivc * qcpre 
+qgut = qgutc * qcpre 
+qsk = qskc * qcpre * ( skinarea / skintarea ) 
+
+qkidi = qfili / 0.2 
+qkid = qfil / 0.2 
+
+
+
+vliv = vlivc * bwinit 
+vgut = vgutc * bwinit 
+vkid = vkidc * bwinit 
+vfil = vfilc * bwinit 
+
+vplas = vplasc * bw 
+
+# line 272 
+skintarea = 9.1 * ( ( bw * 1000 ) ** 0.666 ) 
+constant skinthickness = 0.1 
+constant skinarea = 972 
+
+vsk = ( skinarea * skinthickness ) / 1000 
+
+
+
+tm = tmc * ( bw ** 0.75 ) 
+# line 281 
+kurine = kurinec * ( bw ** ( - 0.25 ) ) 
+
+
+
+vfat = vfatc * bw 
+vfati = vfatic * bw 
+vfatf = vfatfc * bw 
+
+
+vmami = ( vmamc + 0.05 ) * bwinit 
+# line 291 
+vmam = ( 1 + ( vmamt / vmamc ) ) * ( vmamc * bwinit ) 
+
+
+
+
+vr = ( 0.84 * bw ) - vliv - vfat - vmilk - vkid - vfil - vgut - vsk - vplas - vmam 
+vbal = ( 0.84 * bw ) - vliv - vfat - vmilk - vkid - vfil - vgut - vsk - vplas - vmam - vr 
+
+
+
+# line 301 
+qfat = ( qfati * ( vfat / vfati ) ) 
+
+qmam = qmami * ( vmam / vmami ) + frac * qmam 
+
+
+
+# line 307 
+qc = qcpost + ( qfat - qfati ) + ( qmam - qmami ) + ( qfil - qfili ) + ( qkid - qkidi ) 
+qr = qc - ( qliv + qkid + qfil + qfat + qmam + qsk + qgut ) 
+qbal = qc - ( qliv + qkid + qfil + qfat + qmam + qsk + qgut + qr ) 
+
+
+
+
+
+
+rfat = qfat * ( ca * free - cfat * freefat ) 
+# line 325 
+z99999 = rfat 
+# line 325 
+z99998 = afat0 
+# line 325 
+integral afat = z99999 , z99998 
+cfat = afat / vfat 
+cvfat = cfat / pfat 
+
+
+
+rmilk = qmam * ( ca * free - cmilk * freemilk ) - kmilk * cmilk 
+# line 332 
+z99997 = rmilk 
+# line 332 
+z99996 = 0.0 
+# line 332 
+integral amilk = z99997 , z99996 
+cmilk = amilk / vmilk 
+
+rtrans = kmilk * cmilk 
+# line 336 
+z99995 = rtrans 
+# line 336 
+z99994 = 0.0 
+# line 336 
+integral atrans = z99995 , z99994 
+
+
+rgut = qgut * ( ca * free - cgut * freeg ) + pdrink 
+# line 340 
+z99993 = rgut 
+# line 340 
+z99992 = ag0 
+# line 340 
+integral agut = z99993 , z99992 
+cgut = agut / vgut 
+cvgut = cgut / pgut 
+
+# line 344 
+z99991 = pdrink 
+# line 344 
+z99990 = 0.0 
+# line 344 
+integral drinktotal = z99991 , z99990 
+
+
+# line 339 
+rliv = ( qliv * ( ca * free ) ) + ( qgut * cgut * freeg ) - ( ( qliv + qgut ) * cliv * freel ) 
+# line 349 
+z99989 = rliv 
+# line 349 
+z99988 = al0 
+# line 349 
+integral aliv = z99989 , z99988 
+cliv = aliv / vliv 
+cvliv = cliv / pliv 
+
+
+
+# line 346 
+rkid = qkid * ( ca * free - ckid * freek ) + ( tm * cfil ) / ( kt + cfil ) 
+# line 357 
+z99987 = rkid 
+# line 357 
+z99986 = ak0 
+# line 357 
+integral akid = z99987 , z99986 
+ckid = akid / vkid 
+cvkid = ckid / pkid 
+
+
+# line 352 
+rfil = qfil * ( ca * free - cfil ) - ( tm * cfil ) / ( kt + cfil ) 
+
+# line 365 
+z99985 = rfil 
+# line 365 
+z99984 = afil0 
+# line 365 
+integral afil = z99985 , z99984 
+cfil = afil / vfil 
+
+
+rdelay = qfil * cfil - kurine * adelay 
+
+# line 371 
+z99983 = rdelay 
+# line 371 
+z99982 = adelay0 
+# line 371 
+integral adelay = z99983 , z99982 
+
+
+rurine = kurine * adelay 
+# line 375 
+z99981 = rurine 
+# line 375 
+z99980 = aurine0 
+# line 375 
+integral aurine = z99981 , z99980 
+
+
+rsk = qsk * ( ca * free - csk * freesk ) 
+# line 379 
+z99979 = rsk 
+# line 379 
+z99978 = ask0 
+# line 379 
+integral ask = z99979 , z99978 
+csk = ask / vsk 
+cvsk = csk / psk 
+
+
+rr = qr * ( ca * free - cr * freer ) 
+# line 385 
+z99977 = rr 
+# line 385 
+z99976 = ar0 
+# line 385 
+integral ar = z99977 , z99976 
+cr = ar / vr 
+cvr = cr / pr 
+
+
+# line 379 
+rplas = ( qfat * cfat * freefat ) + ( ( qliv + qgut ) * cliv * freel ) + ( qr * cr * freer ) + ( qsk * csk * freesk ) + ( qkid * ckid * freek ) + ( qmam * cmilk * freemilk ) - ( qc * ca * free ) + iv 
+# line 392 
+z99975 = rplas 
+# line 392 
+z99974 = aplas0 
+# line 392 
+integral aplas = z99975 , z99974 
+cafree = aplas / vplas 
+ca = cafree / free 
+# line 395 
+z99973 = ca 
+# line 395 
+z99972 = 0.0 
+# line 395 
+integral aucplas = z99973 , z99972 
+
+# line 397 
+z99971 = iv 
+# line 397 
+z99970 = 0.0 
+# line 397 
+integral ivr = z99971 , z99970 
+
+
+
+constant vdc = 0.17 
+vd = vdc * bwkid 
+constant kelimic = 0.005 
+# line 392 
+kelimi = kelimic * ( bwkid ** ( - 0.25 ) ) 
+
+rri = rtrans - kelimi * cri * freei * vd 
+# line 408 
+z99969 = rri 
+# line 408 
+z99968 = arri0 
+# line 408 
+integral arri = z99969 , z99968 
+cri = arri / vd 
+
+# line 411 
+z99967 = cri 
+# line 411 
+z99966 = 0.0 
+# line 411 
+integral aucplasi = z99967 , z99966 
+
+rurinei = kelimi * cri * freei * vd 
+# line 414 
+z99965 = rurinei 
+# line 414 
+z99964 = 0.0 
+# line 414 
+integral aurinei = z99965 , z99964 
+
+
+
+
+atissue0 = aplas0 + ag0 + al0 + afat0 + ak0 + afil0 + adelay0 + ar0 + ask0 
+aloss0 = aurine0 
+
+atissue = aplas + agut + aliv + afat + akid + afil + adelay + ar + ask + amilk 
+aloss = aurine + atrans 
+
+atissuetotal = atissue - atissue0 
+alosstotal = aloss - aloss0 
+
+atotalbody = atissuetotal + alosstotal 
+
+
+if ( drinktotal .gt. 0.0 ) then 
+# line 419 
+mbal = ( drinktotal - ( atotalbody ) ) / ( drinktotal * 100 + 1.0e-7 ) 
+else 
+mbal = 0.0 
+endif 
+
+
+if ( ivr .gt. 0.0 ) then 
+# line 426 
+ivbal = ( ivr - ( atotalbody ) ) / ( ivr * 100 + 1.0e-7 ) 
+else 
+ivbal = 0.0 
+endif 
+
+
+atissuei0 = arri0 
+atissuei = arri 
+
+atissueitotal = atissuei - atissuei0 
+alossi = aurinei 
+
+dosei = atrans 
+
+# line 440 
+ibal = ( dosei - ( atissueitotal + alossi ) ) 
+
+# line 458 
+if ( t .ge. ( tstop ) ) then 
+# line 458 
+call zztrmt ( ' ' ) 
+# line 458 
+endif 
+end 
+end 
+end 
+
+
+
+# line 465 
+if ( t .ge. ( tstop ) ) then 
+# line 465 
+call zztrmt ( ' ' ) 
+# line 465 
+endif 
+end 
+end 
+end 
+
+

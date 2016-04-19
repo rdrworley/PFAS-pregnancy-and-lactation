@@ -3,7 +3,8 @@ prepare @clear @all
 WESTIG=0;WEDITG=0;CJVITG=0;
 
 %Exposure Parameters
-!! s Dose_M = 0.02	%ug/kg/day
+!! s Dose_M = 0.002	%ug/kg/day
+!! s Total_bf = 2.5
 
 !! st/nc
 

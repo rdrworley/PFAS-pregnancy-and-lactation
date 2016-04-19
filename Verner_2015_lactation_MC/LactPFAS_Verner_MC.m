@@ -72,7 +72,7 @@ data("TIMESCOLLECT", ["T"], TIMESCOLLECT');
 %-----------------------------------------------------------------------------------
 % Simulations 
 COMPOUND = 2
-DOSE_M = 0.02
+DOSE_M = 0.002
 
 start @nocallback
 
