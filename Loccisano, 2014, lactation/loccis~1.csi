@@ -100,17 +100,17 @@ constant tstop = 18000
 
 
 
-constant aplas0 = 0.219992 
-constant ag0 = 0.192826 
-constant al0 = 12.8851 
-constant afat0 = 2.68258 
-constant ak0 = 1.13892 
-constant afil0 = 2.91074e-006 
-constant adelay0 = 0.0248588 
-constant amam0 = 0.355754 
-constant ask0 = 0.0323248 
-constant aurine0 = 7.97202 
-constant ar0 = 13.4075 
+constant aplas0 = 0.861358 
+constant ag0 = 0.753927 
+constant al0 = 50.4324 
+constant afat0 = 10.5064 
+constant ak0 = 4.45960 
+constant afil0 = 1.14619e-005 
+constant adelay0 = 0.0983487 
+constant amam0 = 1.39300 
+constant ask0 = 0.126574 
+constant aurine0 = 673.420 
+constant ar0 = 52.5102 
 
 
 constant arri0 = 2.1946 

@@ -6,7 +6,7 @@ WESTIG=0;WEDITG=0;CJVITG=0;
 
 %Exposure Parameters
 !! s Drinkconc = 0.07
-!! s DrinkRate = 26 %95th percentile consumer only ingestion rate for pregnant women, EFH 2011
+!! s DrinkRate = 26 %mean consumer only ingestion rate for lactating women, EFH 2011
 %!! s PDose = 0.0
 
 !! st/nc

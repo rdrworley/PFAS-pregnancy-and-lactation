@@ -99,17 +99,17 @@ constant frac = 0.0          !for sensitivity analysis
    constant ktrans4c = 0.001         !fetus to fluid
 
    !initial tissue amounts of chemical (from adult human model)
-  Constant APLAS0 = 0.005859
-  Constant AG0 = 0.005852
-  Constant AL0 = 0.391533
-  Constant AFat0 = 0.058594
-  Constant AK0 = 0.034487
-  Constant AFIL0 = 9.8641e-008
-  Constant ADELAY0 = 0.000647
+  Constant APLAS0 = 0.8522
+  Constant AG0 = 0.8512
+  Constant AL0 = 56.9501
+  Constant AFat0 = 8.5227
+  Constant AK0 = 5.0162
+  Constant AFIL0 = 1.4348e-005
+  Constant ADELAY0 = 0.0942
   Constant AMAM0 = 0.00
-  Constant ASK0 = 0.000950
-  Constant AURINE0 = 4.452856
-  Constant AR0 = 0.439221
+  Constant ASK0 = 0.1382
+  Constant AURINE0 = 647.6885
+  Constant AR0 = 63.8866
 
    !fetal tissues
    constant AFPLAS0 = 0.0

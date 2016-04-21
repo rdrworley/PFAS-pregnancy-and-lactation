@@ -97,17 +97,17 @@ constant ktrans3c = 0.008
 constant ktrans4c = 0.001 
 
 
-constant aplas0 = 0.005859 
-constant ag0 = 0.005852 
-constant al0 = 0.391533 
-constant afat0 = 0.058594 
-constant ak0 = 0.034487 
-constant afil0 = 9.8641e-008 
-constant adelay0 = 0.000647 
+constant aplas0 = 0.8522 
+constant ag0 = 0.8512 
+constant al0 = 56.9501 
+constant afat0 = 8.5227 
+constant ak0 = 5.0162 
+constant afil0 = 1.4348e-005 
+constant adelay0 = 0.0942 
 constant amam0 = 0.00 
-constant ask0 = 0.000950 
-constant aurine0 = 4.452856 
-constant ar0 = 0.439221 
+constant ask0 = 0.1382 
+constant aurine0 = 647.6885 
+constant ar0 = 63.8866 
 
 
 constant afplas0 = 0.0 
