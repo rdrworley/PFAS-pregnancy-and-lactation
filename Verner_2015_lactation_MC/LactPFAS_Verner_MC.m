@@ -72,7 +72,7 @@ data("TIMESCOLLECT", ["T"], TIMESCOLLECT');
 %-----------------------------------------------------------------------------------
 % Simulations 
 COMPOUND = 2
-DOSE_M = 0.002
+DOSE_M = 0.02
 
 start @nocallback
 
@@ -91,9 +91,19 @@ age_m = [age_m _age_m(idxs)];
 
 end
 
-xlsWrite("C:\acslX\PFAS_pregnancy_and_lactation\Verner_2015_lactation_MC\MC_LactPFAS_PFOA_2016.xls","C_CHILD","A2:IV10001",c_levels');
-xlsWrite("C:\acslX\PFAS_pregnancy_and_lactation\Verner_2015_lactation_MC\MC_LactPFAS_PFOA_2016.xls","RATIO_LEVEL","A2:IV10001",ratio_level');
-xlsWrite("C:\acslX\PFAS_pregnancy_and_lactation\Verner_2015_lactation_MC\MC_LactPFAS_PFOA_2016.xls","RATIO_DOSE","A2:IV10001",ratio_dose');
-xlsWrite("C:\acslX\PFAS_pregnancy_and_lactation\Verner_2015_lactation_MC\MC_LactPFAS_PFOA_2016.xls","C_MILK","A2:IV10001",c_milk');
-xlsWrite("C:\acslX\PFAS_pregnancy_and_lactation\Verner_2015_lactation_MC\MC_LactPFAS_PFOA_2016.xls","AGE_C","A2:IV10001",age_c');
-xlsWrite("C:\acslX\PFAS_pregnancy_and_lactation\Verner_2015_lactation_MC\MC_LactPFAS_PFOA_2016.xls","AGE_M","A2:IV10001",age_m');
+%Write commands for home computer
+%xlsWrite("C:\acslX\PFAS_pregnancy_and_lactation\Verner_2015_lactation_MC\MC_LactPFAS_PFOA_2016.xls","C_CHILD","A2:IV10001",c_levels');
+%xlsWrite("C:\acslX\PFAS_pregnancy_and_lactation\Verner_2015_lactation_MC\MC_LactPFAS_PFOA_2016.xls","RATIO_LEVEL","A2:IV10001",ratio_level');
+%xlsWrite("C:\acslX\PFAS_pregnancy_and_lactation\Verner_2015_lactation_MC\MC_LactPFAS_PFOA_2016.xls","RATIO_DOSE","A2:IV10001",ratio_dose');
+%xlsWrite("C:\acslX\PFAS_pregnancy_and_lactation\Verner_2015_lactation_MC\MC_LactPFAS_PFOA_2016.xls","C_MILK","A2:IV10001",c_milk');
+%xlsWrite("C:\acslX\PFAS_pregnancy_and_lactation\Verner_2015_lactation_MC\MC_LactPFAS_PFOA_2016.xls","AGE_C","A2:IV10001",age_c');
+%xlsWrite("C:\acslX\PFAS_pregnancy_and_lactation\Verner_2015_lactation_MC\MC_LactPFAS_PFOA_2016.xls","AGE_M","A2:IV10001",age_m');
+
+%Write commands for work computer
+
+xlsWrite("C:\acslX\PFAS_pregnancy_and_lactation\MC_LactPFAS_PFOA_2016.xls","C_CHILD","A2:IV10001",c_levels');
+xlsWrite("C:\acslX\PFAS_pregnancy_and_lactation\MC_LactPFAS_PFOA_2016.xls","RATIO_LEVEL","A2:IV10001",ratio_level');
+xlsWrite("C:\acslX\PFAS_pregnancy_and_lactation\MC_LactPFAS_PFOA_2016.xls","RATIO_DOSE","A2:IV10001",ratio_dose');
+xlsWrite("C:\acslX\PFAS_pregnancy_and_lactation\MC_LactPFAS_PFOA_2016.xls","C_MILK","A2:IV10001",c_milk');
+xlsWrite("C:\acslX\PFAS_pregnancy_and_lactation\MC_LactPFAS_PFOA_2016.xls","AGE_C","A2:IV10001",age_c');
+xlsWrite("C:\acslX\PFAS_pregnancy_and_lactation\MC_LactPFAS_PFOA_2016.xls","AGE_M","A2:IV10001",age_m');
